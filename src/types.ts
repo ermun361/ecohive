@@ -1,8 +1,6 @@
 export type NavigationTab = 'home' | 'smart-hive' | 'hive-tech' | 'impact' | 'products' | 'about-contact';
 export type PageType = NavigationTab;
 
-export type ToneMode = 'balanced' | 'technical' | 'community';
-
 export interface IoTTelemetry {
   hiveId: string;
   temperature: number;
