@@ -1,0 +1,6 @@
+{
+  "name": "EcoHive Kenya - Climate-Smart Honey Value Chain",
+  "description": "Official digital platform for EcoHive Kenya Ltd. featuring IoT Smart Beehives, People-Planet-Profit impact, sustainable product catalog, interactive 3D exploded view, live data simulation, and Pullus Africa benchmark structure.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
