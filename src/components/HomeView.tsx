@@ -3,10 +3,12 @@ import { motion } from 'motion/react';
 import { PageType } from '../types';
 import { COMPANY_INFO, TRACTION_STATS, VALUE_CHAIN_STEPS } from '../data/ecohiveData';
 import { IMAGES } from '../data/images';
+import { AmberShaderHero } from './AmberShaderHero';
 import {
   ArrowRight,
   ChevronRight,
   Activity,
+  Sparkles,
 } from 'lucide-react';
 
 interface Props {
@@ -51,18 +53,10 @@ export const HomeView: React.FC<Props> = ({ setPage, openTelemetry }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.7 }}
-        className="relative bg-gradient-to-b from-amber-400/15 via-[#FFFDF7] to-[#FDFBF7] text-stone-900 overflow-hidden py-14 lg:py-24 border-b border-amber-400/20"
+        className="relative text-stone-900 overflow-hidden py-14 lg:py-24 border-b border-amber-400/20"
       >
-        <motion.div
-          animate={{ scale: [1, 1.08, 1], opacity: [0.18, 0.25, 0.18] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-0 right-0 -mt-16 -mr-16 w-96 h-96 bg-amber-400/20 rounded-full blur-3xl pointer-events-none"
-        />
-        <motion.div
-          animate={{ scale: [1, 1.06, 1], opacity: [0.12, 0.2, 0.12] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="absolute bottom-0 left-0 -mb-16 -ml-16 w-80 h-80 bg-yellow-500/15 rounded-full blur-3xl pointer-events-none"
-        />
+        {/* Fullscreen Interactive WebGL Fragment Shader Background */}
+        <AmberShaderHero />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -73,7 +67,7 @@ export const HomeView: React.FC<Props> = ({ setPage, openTelemetry }) => {
               animate="visible"
               className="lg:col-span-7 space-y-6 text-left"
             >
-              <motion.div variants={cardItemVariants} className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-400/20 to-yellow-500/20 text-amber-950 border border-amber-400/50 px-4 py-1.5 rounded-full text-xs font-black tracking-wide uppercase shadow-2xs">
+              <motion.div variants={cardItemVariants} className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-400/30 to-yellow-500/30 text-amber-950 border border-amber-400/60 px-4 py-1.5 rounded-full text-xs font-black tracking-wide uppercase shadow-2xs backdrop-blur-xs">
                 <span>🍯</span>
                 <span>Pure Honey Innovation • Kenya</span>
               </motion.div>
