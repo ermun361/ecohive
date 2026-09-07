@@ -2,11 +2,11 @@ import { IoTTelemetry, ExplodedHotspot, ProductItem, WorklogTask } from '../type
 
 // Export generated image assets paths
 export const ASSETS = {
-  heroBg: '/src/assets/images/ecohive_hero_bg_1785682566593.jpg',
-  peterGitau: '/src/assets/images/peter_gitau_portrait_1785682580605.jpg',
-  explodedHive: '/src/assets/images/exploded_smart_hive_1785682591275.jpg',
-  products: '/src/assets/images/ecohive_products_1785682601224.jpg',
-  beekeeperImpact: '/src/assets/images/kenyan_beekeeper_impact_1785682615966.jpg',
+  heroBg: '/images/ecohive_hero_bg_1785682566593.jpg',
+  peterGitau: '/images/peter_gitau_portrait_1785682580605.jpg',
+  explodedHive: '/images/exploded_smart_hive_1785682591275.jpg',
+  products: '/images/ecohive_products_1785682601224.jpg',
+  beekeeperImpact: '/images/kenyan_beekeeper_impact_1785682615966.jpg',
 };
 
 export const DEFAULT_IOT_DATA: IoTTelemetry = {

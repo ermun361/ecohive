@@ -11,6 +11,8 @@ const app = express();
 const PORT = 3000;
 
 app.use(express.json());
+app.use('/images', express.static(path.join(process.cwd(), 'public/images')));
+app.use(express.static(path.join(process.cwd(), 'public')));
 
 // Memory store for contact lead submissions
 const leadsStore: Array<{
