@@ -41,6 +41,30 @@ const analyticsEvents: Array<{
   timestamp: string;
 }> = [];
 
+// Production Rate Limiter for AI endpoints (sliding window per IP)
+const aiRateLimitStore = new Map<string, { count: number; resetAt: number }>();
+const AI_RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+const AI_MAX_REQUESTS_PER_WINDOW = 10;      // max 10 requests per minute per IP
+const AI_MAX_INPUT_CHARS = 500;             // strict input cap to protect tokens
+
+function checkAiRateLimit(ip: string): { allowed: boolean; remaining: number; retryAfterSec: number } {
+  const now = Date.now();
+  const record = aiRateLimitStore.get(ip);
+
+  if (!record || now > record.resetAt) {
+    aiRateLimitStore.set(ip, { count: 1, resetAt: now + AI_RATE_LIMIT_WINDOW_MS });
+    return { allowed: true, remaining: AI_MAX_REQUESTS_PER_WINDOW - 1, retryAfterSec: 0 };
+  }
+
+  if (record.count >= AI_MAX_REQUESTS_PER_WINDOW) {
+    const retryAfterSec = Math.ceil((record.resetAt - now) / 1000);
+    return { allowed: false, remaining: 0, retryAfterSec };
+  }
+
+  record.count += 1;
+  return { allowed: true, remaining: AI_MAX_REQUESTS_PER_WINDOW - record.count, retryAfterSec: 0 };
+}
+
 // Lazy Gemini AI initialization
 let aiClient: GoogleGenAI | null = null;
 function getAiClient(): GoogleGenAI | null {
@@ -206,17 +230,42 @@ app.get('/api/analytics/stats', (req, res) => {
   });
 });
 
-// Gemini AI Assistant Endpoint
+// Gemini AI Assistant Endpoint with Production Rate Limiting & Input Caps
 app.post('/api/ai-assistant', async (req, res) => {
   try {
+    // 1. IP-Based Sliding Window Rate Limiting
+    const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.ip || '127.0.0.1';
+    const rateLimit = checkAiRateLimit(clientIp);
+
+    res.setHeader('X-RateLimit-Limit', AI_MAX_REQUESTS_PER_WINDOW.toString());
+    res.setHeader('X-RateLimit-Remaining', rateLimit.remaining.toString());
+
+    if (!rateLimit.allowed) {
+      res.setHeader('Retry-After', rateLimit.retryAfterSec.toString());
+      res.status(429).json({
+        error: 'Rate limit exceeded. Please wait before asking another question.',
+        retryAfter: rateLimit.retryAfterSec,
+      });
+      return;
+    }
+
     const { message } = req.body;
 
+    // 2. Input Validation & Strict Character Cap
     if (!message || typeof message !== 'string' || !message.trim()) {
       res.status(400).json({ error: 'Message must be a non-empty string.' });
       return;
     }
 
-    const cleanMessage = message.trim().slice(0, 1000);
+    const trimmed = message.trim();
+    if (trimmed.length > AI_MAX_INPUT_CHARS) {
+      res.status(400).json({
+        error: `Input exceeds maximum allowed length of ${AI_MAX_INPUT_CHARS} characters (received ${trimmed.length}).`,
+      });
+      return;
+    }
+
+    const cleanMessage = trimmed;
 
     const ai = getAiClient();
     if (!ai) {
@@ -244,10 +293,17 @@ User question: "${cleanMessage}"
 
 Provide a friendly, authoritative, dual-tone answer (balancing technical specs for investors with community warmth for farmers). Keep response concise (under 150 words).`;
 
-    const response = await ai.models.generateContent({
+    // 3. Execution with 15-second max duration timeout guard
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('AI inference timeout exceeded (15s)')), 15000)
+    );
+
+    const generatePromise = ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
     });
+
+    const response: any = await Promise.race([generatePromise, timeoutPromise]);
 
     const reply = response.text || 'Thank you for contacting EcoHive Kenya Ltd. Please reach out to Info@ecohivekenya.com for more details.';
     res.json({ reply });
