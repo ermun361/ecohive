@@ -10,8 +10,25 @@ export const Hive3DCanvas: React.FC<Props> = ({ activePartId, onSelectPart }) =>
   const containerRef = useRef<HTMLDivElement>(null);
   const [exploded, setExploded] = useState(false);
   const [autoRotate, setAutoRotate] = useState(true);
+  const [materialTheme, setMaterialTheme] = useState<'green' | 'amber' | 'charcoal' | 'white'>('green');
   const explodedRef = useRef(exploded);
   explodedRef.current = exploded;
+  const hdpeMatRef = useRef<THREE.MeshStandardMaterial | null>(null);
+
+  const MATERIAL_PRESETS = [
+    { id: 'green' as const, name: 'Eco-Green', hex: 0x15803d, bgClass: 'bg-emerald-600' },
+    { id: 'amber' as const, name: 'Honey Gold', hex: 0xd97706, bgClass: 'bg-amber-500' },
+    { id: 'charcoal' as const, name: 'HDPE Black', hex: 0x334155, bgClass: 'bg-slate-700' },
+    { id: 'white' as const, name: 'Thermal White', hex: 0xe2e8f0, bgClass: 'bg-slate-200' },
+  ];
+
+  const handleSelectMaterial = (themeId: 'green' | 'amber' | 'charcoal' | 'white') => {
+    setMaterialTheme(themeId);
+    const preset = MATERIAL_PRESETS.find((p) => p.id === themeId);
+    if (preset && hdpeMatRef.current) {
+      hdpeMatRef.current.color.setHex(preset.hex);
+    }
+  };
 
   useEffect(() => {
     const container = containerRef.current;
@@ -69,11 +86,13 @@ export const Hive3DCanvas: React.FC<Props> = ({ activePartId, onSelectPart }) =>
     scene.add(hiveGroup);
 
     // Materials
+    const initialPreset = MATERIAL_PRESETS.find((p) => p.id === materialTheme);
     const hdpeMat = new THREE.MeshStandardMaterial({
-      color: 0x15803d, // Emerald green HDPE
+      color: initialPreset ? initialPreset.hex : 0x15803d, // Emerald green HDPE
       roughness: 0.35,
       metalness: 0.1,
     });
+    hdpeMatRef.current = hdpeMat;
     const solarMat = new THREE.MeshStandardMaterial({
       color: 0x0284c7, // Solar blue
       roughness: 0.2,
@@ -239,7 +258,16 @@ export const Hive3DCanvas: React.FC<Props> = ({ activePartId, onSelectPart }) =>
       isDragging = false;
     };
 
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const zoomFactor = 1 + e.deltaY * 0.001;
+      camera.position.x = Math.max(1.8, Math.min(7.0, camera.position.x * zoomFactor));
+      camera.position.z = Math.max(2.2, Math.min(8.5, camera.position.z * zoomFactor));
+      camera.lookAt(0, 0.4, 0);
+    };
+
     renderer.domElement.addEventListener('pointerdown', onPointerDown);
+    renderer.domElement.addEventListener('wheel', onWheel, { passive: false });
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('pointerup', onPointerUp);
 
@@ -291,6 +319,7 @@ export const Hive3DCanvas: React.FC<Props> = ({ activePartId, onSelectPart }) =>
       window.removeEventListener('resize', handleResize);
       renderer.domElement.removeEventListener('click', handleClick);
       renderer.domElement.removeEventListener('pointerdown', onPointerDown);
+      renderer.domElement.removeEventListener('wheel', onWheel);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', onPointerUp);
       cancelAnimationFrame(animationId);
@@ -302,15 +331,15 @@ export const Hive3DCanvas: React.FC<Props> = ({ activePartId, onSelectPart }) =>
   }, [autoRotate, onSelectPart]);
 
   return (
-    <div className="relative w-full h-[420px] rounded-3xl overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl flex flex-col justify-between">
+    <div className="relative w-full h-[450px] rounded-3xl overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl flex flex-col justify-between">
       {/* 3D Canvas Container with touch-action pan-y */}
       <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing touch-pan-y" />
 
       {/* Top Floating Controls */}
-      <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none">
-        <div className="bg-slate-900/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-amber-400/40 text-xs font-bold text-amber-300 flex items-center gap-2 shadow-lg">
+      <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
+        <div className="bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-amber-400/40 text-xs font-bold text-amber-300 flex items-center gap-2 shadow-lg">
           <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-          <span>Interactive 3D WebGL Model</span>
+          <span>Interactive 3D WebGL</span>
         </div>
 
         <div className="flex items-center gap-2 pointer-events-auto">
@@ -333,15 +362,39 @@ export const Hive3DCanvas: React.FC<Props> = ({ activePartId, onSelectPart }) =>
                 : 'bg-slate-800/90 text-slate-300 hover:bg-slate-700 border border-slate-700 hover:border-amber-400/40'
             }`}
           >
-            {autoRotate ? 'Pause Rotation' : 'Auto Rotate'}
+            {autoRotate ? 'Pause' : 'Auto-Rotate'}
           </button>
         </div>
       </div>
 
-      {/* Bottom Hint */}
-      <div className="absolute bottom-3 left-4 right-4 pointer-events-none flex items-center justify-between text-[11px] text-slate-400 bg-slate-900/80 backdrop-blur-sm px-3.5 py-1.5 rounded-xl border border-amber-400/25">
-        <span>Click & drag to rotate • Click parts to inspect specs</span>
-        <span className="text-amber-300 font-bold">Recycled HDPE Composite (25kg)</span>
+      {/* Bottom Floating Bar: Material Configurator + Hint */}
+      <div className="absolute bottom-3 left-4 right-4 flex flex-col sm:flex-row items-center justify-between gap-2 pointer-events-none">
+        {/* Material Swatches Configurator */}
+        <div className="pointer-events-auto bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-700/80 shadow-md flex items-center gap-2">
+          <span className="text-[11px] text-slate-400 font-medium">HDPE Finish:</span>
+          <div className="flex items-center gap-1.5">
+            {MATERIAL_PRESETS.map((preset) => (
+              <button
+                key={preset.id}
+                onClick={() => handleSelectMaterial(preset.id)}
+                title={preset.name}
+                className={`w-5 h-5 rounded-full ${preset.bgClass} border-2 transition-all cursor-pointer ${
+                  materialTheme === preset.id
+                    ? 'border-amber-400 scale-110 shadow-sm shadow-amber-400/50'
+                    : 'border-slate-600 hover:border-slate-400'
+                }`}
+              />
+            ))}
+          </div>
+          <span className="text-[11px] font-bold text-amber-300 ml-1">
+            {MATERIAL_PRESETS.find((p) => p.id === materialTheme)?.name}
+          </span>
+        </div>
+
+        {/* Interaction Hint */}
+        <div className="text-[11px] text-slate-400 bg-slate-900/85 backdrop-blur-sm px-3.5 py-1.5 rounded-xl border border-amber-400/25 pointer-events-none flex items-center gap-2">
+          <span>Drag to orbit • Scroll to zoom • Click parts to inspect</span>
+        </div>
       </div>
     </div>
   );

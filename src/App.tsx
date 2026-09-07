@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageType } from './types';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
@@ -15,6 +15,11 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('home');
   const [telemetryOpen, setTelemetryOpen] = useState(false);
   const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
+
+  // Auto-scroll to top when page transitions
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [currentPage]);
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-stone-900 font-body flex flex-col selection:bg-amber-500 selection:text-slate-950">

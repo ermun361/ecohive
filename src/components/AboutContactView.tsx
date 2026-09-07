@@ -51,8 +51,25 @@ export const AboutContactView: React.FC = () => {
       return;
     }
 
+    if (nameTrimmed.length < 2) {
+      setFormError('Please enter a valid full name (at least 2 characters).');
+      return;
+    }
+
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrimmed)) {
-      setFormError('Please enter a valid email address.');
+      setFormError('Please enter a valid email address (e.g. name@company.com).');
+      return;
+    }
+
+    // Phone format validation (allows +, spaces, dashes, parentheses, minimum 7 digits)
+    const digitsOnly = phoneTrimmed.replace(/\D/g, '');
+    if (digitsOnly.length < 7 || digitsOnly.length > 15) {
+      setFormError('Please enter a valid phone or WhatsApp number (with country code, e.g. +254 700 000 000).');
+      return;
+    }
+
+    if (messageTrimmed.length < 5) {
+      setFormError('Please provide a short description or inquiry (at least 5 characters).');
       return;
     }
 
@@ -69,19 +86,20 @@ export const AboutContactView: React.FC = () => {
           phone: phoneTrimmed,
           role: formData.role,
           message: messageTrimmed,
-          hiveQuantity: formData.hiveQuantity,
+          hiveQuantity: Math.max(1, Math.min(1000, Number(formData.hiveQuantity) || 1)),
           targetEmail,
         }),
       });
 
+      const data = await res.json().catch(() => null);
+
       if (!res.ok) {
-        throw new Error('Failed to send contact inquiry.');
+        throw new Error(data?.error || 'Failed to send contact inquiry.');
       }
 
-      const data = await res.json();
       setSubmittedResponse({
         success: true,
-        message: data.message || 'Your inquiry was successfully sent and routed!',
+        message: data?.message || 'Your inquiry was successfully sent and routed!',
         routedTo: targetEmail,
       });
 
@@ -94,8 +112,8 @@ export const AboutContactView: React.FC = () => {
         message: '',
         hiveQuantity: 5,
       });
-    } catch (err) {
-      setFormError('Unable to route your message right now due to a network interruption. Please try again or email us directly.');
+    } catch (err: any) {
+      setFormError(err.message || 'Unable to route your message right now. Please try again or email us directly.');
     } finally {
       setSubmitting(false);
     }

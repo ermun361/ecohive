@@ -11,6 +11,7 @@ import {
   ShoppingBag,
   Sparkles,
   Download,
+  Search,
 } from 'lucide-react';
 
 interface Props {
@@ -19,12 +20,21 @@ interface Props {
 
 export const ProductsView: React.FC<Props> = ({ setPage }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
 
-  const filteredProducts =
-    selectedCategory === 'All'
-      ? PRODUCTS
-      : PRODUCTS.filter((p) => p.category === selectedCategory);
+  const filteredProducts = PRODUCTS.filter((p) => {
+    const matchesCategory = selectedCategory === 'All' || p.category === selectedCategory;
+    const query = searchQuery.toLowerCase().trim();
+    if (!query) return matchesCategory;
+
+    const matchesName = p.name.toLowerCase().includes(query);
+    const matchesTagline = p.tagline.toLowerCase().includes(query);
+    const matchesDesc = (p.descCommunity + ' ' + p.descTechnical).toLowerCase().includes(query);
+    const matchesSpecs = p.specs.some((s) => s.toLowerCase().includes(query));
+
+    return matchesCategory && (matchesName || matchesTagline || matchesDesc || matchesSpecs);
+  });
 
   return (
     <div className="space-y-12 pb-16">
@@ -57,29 +67,75 @@ export const ProductsView: React.FC<Props> = ({ setPage }) => {
         </div>
       </section>
 
-      {/* CATEGORY FILTERS */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          {['All', 'Honey', 'Wellness', 'Hardware'].map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
-                selectedCategory === cat
-                  ? 'bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 shadow-md shadow-amber-400/25 border border-amber-400/50'
-                  : 'bg-white text-stone-700 hover:bg-amber-400/10 border border-amber-400/30'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+      {/* CATEGORY & SEARCH CONTROLS */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          {/* Category Tabs */}
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {['All', 'Honey', 'Wellness', 'Hardware'].map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
+                  selectedCategory === cat
+                    ? 'bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 shadow-md shadow-amber-400/25 border border-amber-400/50'
+                    : 'bg-white text-stone-700 hover:bg-amber-400/10 border border-amber-400/30'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Search Box */}
+          <div className="relative w-full sm:w-72">
+            <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search honey, propolis, hives..."
+              className="w-full bg-white border border-amber-400/30 focus:border-amber-500 rounded-xl pl-9 pr-8 py-2 text-xs sm:text-sm text-stone-800 placeholder-stone-400 focus:outline-hidden transition-all shadow-xs"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 p-0.5 rounded-full cursor-pointer"
+                title="Clear search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
       </section>
 
-      {/* PRODUCT GRID */}
+      {/* PRODUCT GRID OR EMPTY STATE */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {filteredProducts.map((p) => (
+        {filteredProducts.length === 0 ? (
+          <div className="text-center py-14 px-6 bg-white rounded-3xl border border-amber-400/25 shadow-sm max-w-xl mx-auto space-y-4">
+            <div className="w-14 h-14 bg-amber-400/15 text-amber-900 border border-amber-400/30 rounded-2xl flex items-center justify-center mx-auto shadow-2xs">
+              <Search className="w-7 h-7 text-amber-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-black text-stone-900 font-display">No Products Found</h3>
+              <p className="text-xs sm:text-sm text-stone-600 mt-1 max-w-md mx-auto font-body">
+                We couldn't find any products matching &ldquo;{searchQuery}&rdquo; {selectedCategory !== 'All' ? `in the ${selectedCategory} category.` : 'in our catalog.'}
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedCategory('All');
+              }}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-slate-950 rounded-xl font-black text-xs shadow-md transition-all cursor-pointer"
+            >
+              Reset Search & Show All
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {filteredProducts.map((p) => (
             <div
               key={p.id}
               className="bg-white rounded-3xl border border-amber-400/25 shadow-sm hover:shadow-xl hover:border-yellow-500/60 transition-all flex flex-col justify-between overflow-hidden group"
@@ -135,6 +191,7 @@ export const ProductsView: React.FC<Props> = ({ setPage }) => {
             </div>
           ))}
         </div>
+        )}
       </section>
 
       {/* PRODUCT DETAIL MODAL */}
