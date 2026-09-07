@@ -161,24 +161,29 @@ export const Footer: React.FC<Props> = ({ setPage }) => {
 
             <form onSubmit={handleSubscribe} className="space-y-2">
               <div className="relative">
+                <label htmlFor="newsletter-email" className="sr-only">
+                  Email address for EcoHive quarterly newsletter
+                </label>
                 <input
+                  id="newsletter-email"
                   type="email"
                   value={newsletterEmail}
                   onChange={(e) => setNewsletterEmail(e.target.value)}
                   placeholder="Enter your email"
                   required
-                  className="w-full bg-stone-900 border border-amber-400/30 rounded-2xl px-4 py-2.5 text-xs text-white placeholder-stone-400 focus:outline-hidden focus:border-amber-400 pr-10"
+                  aria-label="Enter your email to subscribe to EcoHive newsletter"
+                  className="w-full bg-stone-900 border border-amber-400/30 rounded-2xl px-4 py-2.5 text-xs text-white placeholder-stone-400 focus:outline-hidden focus:border-amber-400 focus-visible:ring-2 focus-visible:ring-amber-400 pr-10"
                 />
                 <button
                   type="submit"
                   aria-label="Subscribe to newsletter"
-                  className="absolute right-1 top-1 bottom-1 bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-slate-950 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center cursor-pointer shadow-xs border border-amber-400/40"
+                  className="absolute right-1 top-1 bottom-1 bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-slate-950 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center cursor-pointer shadow-xs border border-amber-400/40 focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:outline-hidden"
                 >
-                  <Send className="w-3.5 h-3.5" />
+                  <Send className="w-3.5 h-3.5" aria-hidden="true" />
                 </button>
               </div>
               {subscribed && (
-                <p className="text-xs text-amber-300 font-bold animate-pulse">
+                <p role="status" className="text-xs text-amber-300 font-bold animate-pulse">
                   ✓ Thank you for subscribing to EcoHive Kenya!
                 </p>
               )}

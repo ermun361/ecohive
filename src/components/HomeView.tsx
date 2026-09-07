@@ -124,29 +124,32 @@ export const HomeView: React.FC<Props> = ({ setPage, openTelemetry }) => {
                   whileHover={{ scale: 1.03, y: -2 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setPage('smart-hive')}
-                  className="bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-500 hover:from-amber-500 hover:to-yellow-600 text-slate-950 font-black px-7 py-3.5 rounded-full shadow-lg shadow-amber-400/25 border border-amber-400/40 transition-all flex items-center gap-2 text-sm sm:text-base cursor-pointer"
+                  aria-label="Explore Climate-Smart Beehive and 3D anatomy"
+                  className="bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-500 hover:from-amber-500 hover:to-yellow-600 text-slate-950 font-black px-7 py-3.5 rounded-full shadow-lg shadow-amber-400/25 border border-amber-400/40 transition-all flex items-center gap-2 text-sm sm:text-base cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-hidden"
                 >
                   <span>Explore Climate-Smart Hive</span>
-                  <ArrowRight className="w-5 h-5" />
+                  <ArrowRight className="w-5 h-5" aria-hidden="true" />
                 </motion.button>
 
                 <motion.button
                   whileHover={{ scale: 1.03, y: -2 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setPage('about-contact')}
-                  className="bg-white hover:bg-amber-400/10 text-stone-900 px-6 py-3.5 rounded-full font-black border border-amber-400/40 shadow-xs hover:border-yellow-500 transition-all flex items-center gap-2 text-sm sm:text-base cursor-pointer"
+                  aria-label="Order or get an EcoHive Beehive"
+                  className="bg-white hover:bg-amber-400/10 text-stone-900 px-6 py-3.5 rounded-full font-black border border-amber-400/40 shadow-xs hover:border-yellow-500 transition-all flex items-center gap-2 text-sm sm:text-base cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-hidden"
                 >
                   <span>Get a Hive</span>
-                  <ChevronRight className="w-5 h-5 text-amber-600" />
+                  <ChevronRight className="w-5 h-5 text-amber-600" aria-hidden="true" />
                 </motion.button>
 
                 <motion.button
                   whileHover={{ scale: 1.03, y: -2 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={openTelemetry}
-                  className="bg-amber-400/10 hover:bg-amber-400/20 text-amber-950 px-5 py-3.5 rounded-full font-black border border-amber-400/40 hover:border-yellow-500 transition-all flex items-center gap-2 text-xs sm:text-sm cursor-pointer"
+                  aria-label="Launch live IoT telemetry monitor"
+                  className="bg-amber-400/10 hover:bg-amber-400/20 text-amber-950 px-5 py-3.5 rounded-full font-black border border-amber-400/40 hover:border-yellow-500 transition-all flex items-center gap-2 text-xs sm:text-sm cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-hidden"
                 >
-                  <Activity className="w-4 h-4 text-amber-600 animate-pulse" />
+                  <Activity className="w-4 h-4 text-amber-600 animate-pulse" aria-hidden="true" />
                   <span>Live Telemetry</span>
                 </motion.button>
               </motion.div>
@@ -440,7 +443,9 @@ export const HomeView: React.FC<Props> = ({ setPage, openTelemetry }) => {
               <div className="relative rounded-3xl overflow-hidden border-2 border-amber-400/40 shadow-2xl group">
                 <img
                   src={IMAGES.explodedHive}
-                  alt="3D Exploded View of Climate-Smart Beehive"
+                  alt="3D Exploded View of Climate-Smart Beehive showing solar panel and HDPE chambers"
+                  width="600"
+                  height="420"
                   className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500"
                   referrerPolicy="no-referrer"
                   loading="lazy"
@@ -518,7 +523,9 @@ export const HomeView: React.FC<Props> = ({ setPage, openTelemetry }) => {
               <div className="relative inline-block">
                 <img
                   src={IMAGES.ceoPeterGitau}
-                  alt="Peter Gitau CEO EcoHive Kenya Ltd."
+                  alt="Peter Gitau, Founder and Chief Executive Officer of EcoHive Kenya Ltd."
+                  width="224"
+                  height="224"
                   className="w-48 h-48 sm:w-56 sm:h-56 rounded-2xl object-cover mx-auto shadow-xl border-4 border-amber-400/50"
                   referrerPolicy="no-referrer"
                   loading="lazy"

@@ -83,19 +83,19 @@ export const IoTDashboardModal: React.FC<Props> = ({ isOpen, onClose }) => {
               onClick={fetchTelemetry}
               disabled={loading}
               aria-label="Refresh telemetry stream"
-              className="p-2 bg-stone-800 hover:bg-stone-700 text-amber-300 rounded-xl border border-stone-700 text-xs flex items-center gap-1.5 cursor-pointer"
+              className="p-2 bg-stone-800 hover:bg-stone-700 text-amber-300 rounded-xl border border-stone-700 text-xs flex items-center gap-1.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-hidden"
               title="Refresh Stream"
             >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
               <span className="hidden sm:inline font-bold">Refresh</span>
             </button>
 
             <button
               onClick={onClose}
               aria-label="Close telemetry monitor"
-              className="p-2 text-stone-400 hover:text-white rounded-full bg-stone-800 hover:bg-stone-700 transition-colors cursor-pointer"
+              className="p-2 text-stone-400 hover:text-white rounded-full bg-stone-800 hover:bg-stone-700 transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-hidden"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -103,14 +103,17 @@ export const IoTDashboardModal: React.FC<Props> = ({ isOpen, onClose }) => {
         {/* Content */}
         <div className="p-6 overflow-y-auto space-y-6 flex-1 text-xs sm:text-sm">
           {/* Node Selector Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div role="tablist" aria-label="Apiary cluster nodes" className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {telemetry.map((node) => {
               const isSelected = selectedNode.id === node.id;
               return (
                 <button
                   key={node.id}
+                  role="tab"
+                  aria-selected={isSelected}
+                  aria-label={`${node.location}, ${node.region} - ${node.tempC} degrees Celsius, ${node.weightKg} kg, status: ${node.status}`}
                   onClick={() => setSelectedNode(node)}
-                  className={`p-3.5 rounded-2xl text-left transition-all border cursor-pointer ${
+                  className={`p-3.5 rounded-2xl text-left transition-all border cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-hidden ${
                     isSelected
                       ? 'bg-amber-950/60 border-amber-400 shadow-md ring-1 ring-amber-400'
                       : 'bg-stone-950/80 border-stone-800 hover:border-amber-500/40'

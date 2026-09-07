@@ -23,6 +23,14 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-stone-900 font-body flex flex-col selection:bg-amber-500 selection:text-slate-950">
+      {/* Accessible Skip Link */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-amber-400 focus:text-slate-950 focus:font-bold focus:rounded-xl focus:shadow-xl focus:border-2 focus:border-amber-600 focus:outline-hidden"
+      >
+        Skip to main content
+      </a>
+
       {/* Header */}
       <Header
         currentPage={currentPage}
@@ -32,7 +40,7 @@ export default function App() {
       />
 
       {/* Main Page View Router */}
-      <main className="flex-1">
+      <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-hidden">
         {currentPage === 'home' && (
           <HomeView
             setPage={setCurrentPage}

@@ -65,20 +65,28 @@ export const ImpactView: React.FC<Props> = () => {
           {/* Slider Control */}
           <div className="space-y-4 max-w-2xl mx-auto bg-amber-400/10 p-6 rounded-3xl border border-amber-400/30">
             <div className="flex items-center justify-between font-black">
-              <span className="text-stone-800 text-sm">Deployment Scale:</span>
+              <label htmlFor="impact-slider" className="text-stone-800 text-sm cursor-pointer">
+                Deployment Scale:
+              </label>
               <span className="text-slate-950 text-xl font-mono bg-gradient-to-r from-amber-400 to-yellow-500 border border-amber-400 px-4 py-1 rounded-xl shadow-xs font-black">
                 {hiveCount} Smart Hives
               </span>
             </div>
 
             <input
+              id="impact-slider"
               type="range"
               min="10"
               max="1000"
               step="10"
               value={hiveCount}
               onChange={(e) => setHiveCount(Number(e.target.value))}
-              className="w-full accent-amber-500 h-2.5 bg-amber-400/30 rounded-lg cursor-pointer"
+              aria-label="Adjust simulated hive deployment scale"
+              aria-valuemin={10}
+              aria-valuemax={1000}
+              aria-valuenow={hiveCount}
+              aria-valuetext={`${hiveCount} smart hives`}
+              className="w-full accent-amber-500 h-2.5 bg-amber-400/30 rounded-lg cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-hidden"
             />
 
             <div className="flex justify-between text-[11px] text-stone-600 font-mono font-bold">
@@ -152,7 +160,9 @@ export const ImpactView: React.FC<Props> = () => {
             <div className="lg:col-span-6">
               <img
                 src={IMAGES.beekeepers}
-                alt="Kenyan Beekeepers in field"
+                alt="Kenyan Beekeeping community members inspecting healthy EcoHive apiary in Nakuru County"
+                width="640"
+                height="420"
                 className="w-full h-full object-cover min-h-[320px]"
                 referrerPolicy="no-referrer"
                 loading="lazy"

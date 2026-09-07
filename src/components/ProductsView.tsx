@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ProductItem } from '../types';
 import { PRODUCTS } from '../data/ecohiveData';
 import { IMAGES } from '../data/images';
@@ -22,6 +22,16 @@ export const ProductsView: React.FC<Props> = ({ setPage }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && selectedProduct) {
+        setSelectedProduct(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedProduct]);
 
   const filteredProducts = PRODUCTS.filter((p) => {
     const matchesCategory = selectedCategory === 'All' || p.category === selectedCategory;
@@ -57,7 +67,9 @@ export const ProductsView: React.FC<Props> = ({ setPage }) => {
           <div className="pt-4 max-w-2xl mx-auto rounded-3xl overflow-hidden shadow-2xl border-2 border-amber-400/50">
             <img
               src={IMAGES.products}
-              alt="EcoHive Products Lineup"
+              alt="EcoHive Kenya pure raw honey jars, propolis tincture, and climate-smart beehives"
+              width="800"
+              height="320"
               className="w-full h-48 sm:h-64 object-cover"
               referrerPolicy="no-referrer"
               loading="lazy"
@@ -71,12 +83,14 @@ export const ProductsView: React.FC<Props> = ({ setPage }) => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           {/* Category Tabs */}
-          <div className="flex flex-wrap items-center justify-center gap-2">
+          <div role="tablist" aria-label="Product categories" className="flex flex-wrap items-center justify-center gap-2">
             {['All', 'Honey', 'Wellness', 'Hardware'].map((cat) => (
               <button
                 key={cat}
+                role="tab"
+                aria-selected={selectedCategory === cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
+                className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-hidden ${
                   selectedCategory === cat
                     ? 'bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 shadow-md shadow-amber-400/25 border border-amber-400/50'
                     : 'bg-white text-stone-700 hover:bg-amber-400/10 border border-amber-400/30'
@@ -89,21 +103,24 @@ export const ProductsView: React.FC<Props> = ({ setPage }) => {
 
           {/* Search Box */}
           <div className="relative w-full sm:w-72">
-            <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true" />
             <input
+              id="product-search"
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search honey, propolis, hives..."
-              className="w-full bg-white border border-amber-400/30 focus:border-amber-500 rounded-xl pl-9 pr-8 py-2 text-xs sm:text-sm text-stone-800 placeholder-stone-400 focus:outline-hidden transition-all shadow-xs"
+              aria-label="Search honey, propolis, and beehives"
+              className="w-full bg-white border border-amber-400/30 focus:border-amber-500 rounded-xl pl-9 pr-8 py-2 text-xs sm:text-sm text-stone-800 placeholder-stone-400 focus:outline-hidden transition-all shadow-xs focus-visible:ring-2 focus-visible:ring-amber-500"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 p-0.5 rounded-full cursor-pointer"
+                aria-label="Clear search query"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 p-0.5 rounded-full cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-hidden"
                 title="Clear search"
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="w-3.5 h-3.5" aria-hidden="true" />
               </button>
             )}
           </div>
@@ -183,7 +200,8 @@ export const ProductsView: React.FC<Props> = ({ setPage }) => {
 
                 <button
                   onClick={() => setSelectedProduct(p)}
-                  className="bg-stone-900 hover:bg-stone-800 text-amber-400 hover:text-yellow-400 text-xs font-black px-4 py-2.5 rounded-xl transition-all shadow-xs border border-amber-400/30 hover:border-yellow-500 cursor-pointer"
+                  aria-label={`View details and inquire for ${p.name}`}
+                  className="bg-stone-900 hover:bg-stone-800 text-amber-400 hover:text-yellow-400 text-xs font-black px-4 py-2.5 rounded-xl transition-all shadow-xs border border-amber-400/30 hover:border-yellow-500 cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-hidden"
                 >
                   View & Inquire
                 </button>
@@ -196,21 +214,28 @@ export const ProductsView: React.FC<Props> = ({ setPage }) => {
 
       {/* PRODUCT DETAIL MODAL */}
       {selectedProduct && (
-        <div className="fixed inset-0 bg-stone-950/75 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="product-modal-title"
+          className="fixed inset-0 bg-stone-950/75 backdrop-blur-xs z-50 flex items-center justify-center p-4"
+        >
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl border-2 border-amber-400/40 relative animate-in zoom-in-95 duration-200">
             <button
               onClick={() => setSelectedProduct(null)}
-              aria-label="Close product detail"
-              className="absolute top-4 right-4 p-2 text-stone-400 hover:text-stone-700 rounded-full bg-stone-100 cursor-pointer hover:bg-amber-400/20 transition-colors"
+              aria-label="Close product details dialog"
+              className="absolute top-4 right-4 p-2 text-stone-400 hover:text-stone-700 rounded-full bg-stone-100 cursor-pointer hover:bg-amber-400/20 transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-hidden"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5" aria-hidden="true" />
             </button>
 
             <div className="space-y-2">
               <span className="bg-amber-400/15 text-amber-950 text-xs font-black px-3 py-1 rounded-full uppercase border border-amber-400/40 shadow-2xs">
                 {selectedProduct.category} • {selectedProduct.certification}
               </span>
-              <h3 className="text-2xl font-black text-stone-900 font-display">{selectedProduct.name}</h3>
+              <h3 id="product-modal-title" className="text-2xl font-black text-stone-900 font-display">
+                {selectedProduct.name}
+              </h3>
               <p className="text-amber-800 text-xs font-bold font-editorial">{selectedProduct.tagline}</p>
             </div>
 
@@ -230,7 +255,7 @@ export const ProductsView: React.FC<Props> = ({ setPage }) => {
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {selectedProduct.specs.map((spec, i) => (
                   <div key={i} className="flex items-center gap-1.5 text-stone-600">
-                    <CheckCircle2 className="w-4 h-4 text-amber-500 shrink-0" />
+                    <CheckCircle2 className="w-4 h-4 text-amber-500 shrink-0" aria-hidden="true" />
                     <span>{spec}</span>
                   </div>
                 ))}
@@ -239,7 +264,7 @@ export const ProductsView: React.FC<Props> = ({ setPage }) => {
 
             <div className="pt-4 border-t border-amber-400/20 flex items-center justify-between">
               <div>
-                <span className="text-xs text-stone-400 block font-mono">Price</span>
+                <span className="text-xs text-stone-500 block font-mono font-medium">Price</span>
                 <span className="text-2xl font-black text-stone-900 font-mono">
                   KES {selectedProduct.priceKes.toLocaleString()}
                 </span>
@@ -253,7 +278,8 @@ export const ProductsView: React.FC<Props> = ({ setPage }) => {
                   setSelectedProduct(null);
                   setPage('about-contact');
                 }}
-                className="bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-slate-950 font-black text-xs px-5 py-3 rounded-xl transition-all shadow-md shadow-amber-400/25 border border-amber-400/50 cursor-pointer"
+                aria-label={`Inquire about ordering ${selectedProduct.name}`}
+                className="bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-slate-950 font-black text-xs px-5 py-3 rounded-xl transition-all shadow-md shadow-amber-400/25 border border-amber-400/50 cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-hidden"
               >
                 Inquire / Order via Sales (Andika@)
               </button>

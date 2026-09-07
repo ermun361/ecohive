@@ -143,7 +143,9 @@ export const SmartHiveView: React.FC<Props> = ({ openTelemetry }) => {
               <div className="bg-stone-950 p-6 rounded-3xl border-2 border-amber-400/40 shadow-2xl relative overflow-hidden min-h-[420px]">
                 <img
                   src={IMAGES.explodedHive}
-                  alt="3D Exploded View of EcoHive Climate-Smart Beehive"
+                  alt="3D Exploded View of EcoHive Climate-Smart Beehive showing solar roof, honey super, brood chamber, and hive scale"
+                  width="700"
+                  height="450"
                   className="w-full h-auto object-contain max-h-[500px] mx-auto rounded-2xl opacity-90"
                   referrerPolicy="no-referrer"
                   loading="lazy"
@@ -322,7 +324,11 @@ export const SmartHiveView: React.FC<Props> = ({ openTelemetry }) => {
           ) : (
             <div className="space-y-3">
               <form onSubmit={handleDownloadSubmit} className="max-w-md mx-auto flex flex-col sm:flex-row gap-2">
+                <label htmlFor="spec-download-email" className="sr-only">
+                  Your email address for technical specification PDF
+                </label>
                 <input
+                  id="spec-download-email"
                   type="email"
                   value={downloadEmail}
                   onChange={(e) => {
@@ -332,16 +338,17 @@ export const SmartHiveView: React.FC<Props> = ({ openTelemetry }) => {
                   placeholder="Enter your email address"
                   required
                   disabled={isSubmitting}
-                  className="flex-1 bg-white/20 border border-amber-300/60 rounded-xl px-4 py-3 text-xs text-white placeholder-amber-100 focus:outline-hidden focus:border-amber-300 focus:ring-2 focus:ring-amber-400/30 disabled:opacity-50"
+                  aria-label="Enter your email address to receive technical specifications"
+                  className="flex-1 bg-white/20 border border-amber-300/60 rounded-xl px-4 py-3 text-xs text-white placeholder-amber-100 focus:outline-hidden focus:border-amber-300 focus-visible:ring-2 focus-visible:ring-amber-300 disabled:opacity-50"
                 />
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="bg-amber-400 hover:bg-yellow-500 text-slate-950 font-black text-xs px-6 py-3 rounded-xl transition-all shadow-md shrink-0 disabled:opacity-60 flex items-center justify-center gap-1.5 border border-amber-300 cursor-pointer"
+                  className="bg-amber-400 hover:bg-yellow-500 text-slate-950 font-black text-xs px-6 py-3 rounded-xl transition-all shadow-md shrink-0 disabled:opacity-60 flex items-center justify-center gap-1.5 border border-amber-300 cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-hidden"
                 >
                   {isSubmitting ? (
                     <>
-                      <span className="w-3.5 h-3.5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                      <span className="w-3.5 h-3.5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" aria-hidden="true" />
                       <span>Sending...</span>
                     </>
                   ) : (
@@ -350,8 +357,8 @@ export const SmartHiveView: React.FC<Props> = ({ openTelemetry }) => {
                 </button>
               </form>
               {errorMessage && (
-                <div className="flex items-center justify-center gap-1.5 text-xs text-red-200 font-medium">
-                  <AlertCircle className="w-3.5 h-3.5 text-red-300 shrink-0" />
+                <div role="alert" className="flex items-center justify-center gap-1.5 text-xs text-red-200 font-medium">
+                  <AlertCircle className="w-3.5 h-3.5 text-red-300 shrink-0" aria-hidden="true" />
                   <span>{errorMessage}</span>
                 </div>
               )}

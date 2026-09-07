@@ -131,6 +131,8 @@ export const AboutContactView: React.FC = () => {
               <img
                 src={IMAGES.ceoPeterGitau}
                 alt="Peter Gitau CEO EcoHive Kenya Ltd."
+                width="256"
+                height="256"
                 className="w-52 h-52 sm:w-64 sm:h-64 rounded-3xl object-cover mx-auto shadow-2xl border-4 border-amber-400/60"
                 referrerPolicy="no-referrer"
                 loading="lazy"
@@ -271,15 +273,23 @@ export const AboutContactView: React.FC = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Role Selector */}
               <div>
-                <label className="text-xs font-black text-stone-700 block mb-2">I am contacting EcoHive as a:</label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <span id="role-selector-label" className="text-xs font-black text-stone-700 block mb-2">
+                  I am contacting EcoHive as a:
+                </span>
+                <div
+                  role="radiogroup"
+                  aria-labelledby="role-selector-label"
+                  className="grid grid-cols-2 sm:grid-cols-4 gap-2"
+                >
                   {(['Farmer', 'Investor', 'Retailer / Buyer', 'General'] as const).map((r) => (
                     <button
                       type="button"
+                      role="radio"
+                      aria-checked={formData.role === r}
                       key={r}
                       disabled={submitting}
                       onClick={() => setFormData({ ...formData, role: r })}
-                      className={`p-3 rounded-2xl text-xs font-bold transition-all border text-center cursor-pointer ${
+                      className={`p-3 rounded-2xl text-xs font-bold transition-all border text-center cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-hidden ${
                         formData.role === r
                           ? 'bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 border-amber-400 font-black shadow-sm'
                           : 'bg-stone-50 text-stone-700 border-amber-400/20 hover:bg-amber-400/10 hover:border-amber-400/40'
@@ -289,7 +299,7 @@ export const AboutContactView: React.FC = () => {
                     </button>
                   ))}
                 </div>
-                <p className="text-[11px] text-amber-800 font-medium mt-2">
+                <p className="text-[11px] text-amber-900 font-medium mt-2">
                   ℹ Target routing: Message will go to{' '}
                   <strong className="font-mono bg-amber-400/15 px-2 py-0.5 rounded-md border border-amber-400/30 text-amber-950">
                     {getTargetEmail(formData.role)}
@@ -300,8 +310,11 @@ export const AboutContactView: React.FC = () => {
               {/* Name & Email */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-bold text-stone-700 block mb-1">Your Full Name *</label>
+                  <label htmlFor="contact-name" className="text-xs font-bold text-stone-700 block mb-1">
+                    Your Full Name *
+                  </label>
                   <input
+                    id="contact-name"
                     type="text"
                     required
                     disabled={submitting}
@@ -311,13 +324,16 @@ export const AboutContactView: React.FC = () => {
                       if (formError) setFormError('');
                     }}
                     placeholder="e.g. Peter Gitau"
-                    className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-3 text-xs text-stone-900 focus:outline-hidden focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 disabled:opacity-50"
+                    className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-3 text-xs text-stone-900 focus:outline-hidden focus:border-amber-400 focus-visible:ring-2 focus-visible:ring-amber-500 disabled:opacity-50"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-stone-700 block mb-1">Your Email Address *</label>
+                  <label htmlFor="contact-email" className="text-xs font-bold text-stone-700 block mb-1">
+                    Your Email Address *
+                  </label>
                   <input
+                    id="contact-email"
                     type="email"
                     required
                     disabled={submitting}
@@ -327,7 +343,7 @@ export const AboutContactView: React.FC = () => {
                       if (formError) setFormError('');
                     }}
                     placeholder="name@company.com"
-                    className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-3 text-xs text-stone-900 focus:outline-hidden focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 disabled:opacity-50"
+                    className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-3 text-xs text-stone-900 focus:outline-hidden focus:border-amber-400 focus-visible:ring-2 focus-visible:ring-amber-500 disabled:opacity-50"
                   />
                 </div>
               </div>
@@ -335,8 +351,11 @@ export const AboutContactView: React.FC = () => {
               {/* Phone & Quantity */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-bold text-stone-700 block mb-1">Phone Number (WhatsApp) *</label>
+                  <label htmlFor="contact-phone" className="text-xs font-bold text-stone-700 block mb-1">
+                    Phone Number (WhatsApp) *
+                  </label>
                   <input
+                    id="contact-phone"
                     type="tel"
                     required
                     disabled={submitting}
@@ -346,28 +365,34 @@ export const AboutContactView: React.FC = () => {
                       if (formError) setFormError('');
                     }}
                     placeholder="+254 700 000 000"
-                    className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-3 text-xs text-stone-900 focus:outline-hidden focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 disabled:opacity-50"
+                    className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-3 text-xs text-stone-900 focus:outline-hidden focus:border-amber-400 focus-visible:ring-2 focus-visible:ring-amber-500 disabled:opacity-50"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-stone-700 block mb-1">Estimated Hive Quantity (If Applicable)</label>
+                  <label htmlFor="contact-quantity" className="text-xs font-bold text-stone-700 block mb-1">
+                    Estimated Hive Quantity (If Applicable)
+                  </label>
                   <input
+                    id="contact-quantity"
                     type="number"
                     min="1"
                     max="1000"
                     disabled={submitting}
                     value={formData.hiveQuantity}
                     onChange={(e) => setFormData({ ...formData, hiveQuantity: Number(e.target.value) })}
-                    className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-3 text-xs text-stone-900 focus:outline-hidden focus:border-amber-400 font-mono disabled:opacity-50"
+                    className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-3 text-xs text-stone-900 focus:outline-hidden focus:border-amber-400 font-mono disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-amber-500"
                   />
                 </div>
               </div>
 
               {/* Message */}
               <div>
-                <label className="text-xs font-bold text-stone-700 block mb-1">Your Message or Inquiry *</label>
+                <label htmlFor="contact-message" className="text-xs font-bold text-stone-700 block mb-1">
+                  Your Message or Inquiry *
+                </label>
                 <textarea
+                  id="contact-message"
                   required
                   rows={4}
                   disabled={submitting}
@@ -377,13 +402,13 @@ export const AboutContactView: React.FC = () => {
                     if (formError) setFormError('');
                   }}
                   placeholder="Describe your project, farm location, or investment proposal..."
-                  className="w-full bg-stone-50 border border-stone-200 rounded-2xl p-4 text-xs text-stone-900 focus:outline-hidden focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 disabled:opacity-50"
+                  className="w-full bg-stone-50 border border-stone-200 rounded-2xl p-4 text-xs text-stone-900 focus:outline-hidden focus:border-amber-400 focus-visible:ring-2 focus-visible:ring-amber-500 disabled:opacity-50"
                 ></textarea>
               </div>
 
               {formError && (
-                <div className="flex items-center gap-2 bg-red-50 text-red-700 border border-red-200 p-3.5 rounded-2xl text-xs font-medium">
-                  <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                <div role="alert" className="flex items-center gap-2 bg-red-50 text-red-700 border border-red-200 p-3.5 rounded-2xl text-xs font-medium">
+                  <AlertCircle className="w-4 h-4 text-red-600 shrink-0" aria-hidden="true" />
                   <span>{formError}</span>
                 </div>
               )}

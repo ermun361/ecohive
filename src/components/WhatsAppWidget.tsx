@@ -32,12 +32,12 @@ export const WhatsAppWidget: React.FC = () => {
         <button
           onClick={() => setOpen(true)}
           aria-label="Open WhatsApp live chat with EcoHive Kenya"
-          className="flex items-center gap-2.5 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white font-bold px-4 py-3 rounded-full shadow-2xl hover:scale-105 transition-all group border border-emerald-400/30 cursor-pointer"
+          className="flex items-center gap-2.5 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white font-bold px-4 py-3 rounded-full shadow-2xl hover:scale-105 transition-all group border border-emerald-400/30 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:outline-hidden"
           title="Chat with EcoHive Kenya on WhatsApp"
         >
           <div className="relative">
-            <MessageCircle className="w-6 h-6 fill-white/20 text-white group-hover:rotate-12 transition-transform" />
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-400 rounded-full border-2 border-emerald-700 animate-ping"></span>
+            <MessageCircle className="w-6 h-6 fill-white/20 text-white group-hover:rotate-12 transition-transform" aria-hidden="true" />
+            <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-400 rounded-full border-2 border-emerald-700 animate-ping" aria-hidden="true"></span>
           </div>
           <span className="hidden sm:inline text-sm font-semibold pr-1 font-body">WhatsApp Chat</span>
         </button>
@@ -54,13 +54,13 @@ export const WhatsAppWidget: React.FC = () => {
           {/* Header */}
           <div className="bg-stone-950 text-white p-4 flex items-center justify-between border-b border-amber-500/20">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-amber-500/20 flex items-center justify-center font-bold text-amber-400 border border-amber-400/40">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500/20 flex items-center justify-center font-bold text-amber-400 border border-amber-400/40" aria-hidden="true">
                 🐝
               </div>
               <div>
                 <h4 className="font-black text-sm leading-tight font-display text-white">EcoHive Kenya Ltd.</h4>
                 <p className="text-[11px] text-amber-400 flex items-center gap-1 font-body">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  <span className="w-2 h-2 rounded-full bg-emerald-400" aria-hidden="true"></span>
                   Online | Quick Response
                 </p>
               </div>
@@ -68,9 +68,9 @@ export const WhatsAppWidget: React.FC = () => {
             <button
               onClick={() => setOpen(false)}
               aria-label="Close WhatsApp chat dialog"
-              className="text-stone-400 hover:text-white p-1.5 rounded-xl hover:bg-stone-800 transition-colors cursor-pointer"
+              className="text-stone-400 hover:text-white p-1.5 rounded-xl hover:bg-stone-800 transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-hidden"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5" aria-hidden="true" />
             </button>
           </div>
 
@@ -83,11 +83,11 @@ export const WhatsAppWidget: React.FC = () => {
               </p>
             </div>
 
-            <div className="space-y-1.5 pt-1">
+            <div className="space-y-1.5 pt-1" role="group" aria-label="Suggested inquiries">
               <button
                 type="button"
                 onClick={() => setMessage('I am interested in buying Climate-Smart Beehives for my farm.')}
-                className="w-full text-left p-2.5 rounded-xl bg-white hover:bg-amber-100/80 border border-amber-200 text-stone-900 font-medium text-[11px] transition-colors cursor-pointer"
+                className="w-full text-left p-2.5 rounded-xl bg-white hover:bg-amber-100/80 border border-amber-200 text-stone-900 font-medium text-[11px] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-hidden"
               >
                 🐝 Inquiry about Buying Smart Hives
               </button>
@@ -95,7 +95,7 @@ export const WhatsAppWidget: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setMessage('I want to order EcoHive Raw Honey & Propolis wholesale.')}
-                className="w-full text-left p-2.5 rounded-xl bg-white hover:bg-amber-100/80 border border-amber-200 text-stone-900 font-medium text-[11px] transition-colors cursor-pointer"
+                className="w-full text-left p-2.5 rounded-xl bg-white hover:bg-amber-100/80 border border-amber-200 text-stone-900 font-medium text-[11px] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-hidden"
               >
                 🍯 Order Raw Honey / Propolis Wholesale
               </button>
@@ -103,7 +103,7 @@ export const WhatsAppWidget: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setMessage('I am an investor / partner interested in the Honey Value Chain.')}
-                className="w-full text-left p-2.5 rounded-xl bg-white hover:bg-amber-100/80 border border-amber-200 text-stone-900 font-medium text-[11px] transition-colors cursor-pointer"
+                className="w-full text-left p-2.5 rounded-xl bg-white hover:bg-amber-100/80 border border-amber-200 text-stone-900 font-medium text-[11px] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-hidden"
               >
                 💼 Investor & Value Chain Partnership
               </button>
@@ -114,20 +114,21 @@ export const WhatsAppWidget: React.FC = () => {
               onChange={(e) => setMessage(e.target.value)}
               rows={3}
               aria-label="Message to send on WhatsApp"
-              className="w-full bg-white border border-stone-300 rounded-xl p-2.5 text-xs text-stone-900 focus:outline-hidden focus:border-amber-500 font-body"
+              className="w-full bg-white border border-stone-300 rounded-xl p-2.5 text-xs text-stone-900 focus:outline-hidden focus:border-amber-500 font-body focus-visible:ring-2 focus-visible:ring-amber-500"
               placeholder="Type your inquiry..."
             ></textarea>
           </div>
 
           {/* Footer CTA */}
           <div className="p-3 bg-white border-t border-amber-100 flex items-center justify-between">
-            <span className="text-[10px] text-stone-500 font-mono">+254 726 988 151</span>
+            <span className="text-[10px] text-stone-600 font-mono font-medium">+254 726 988 151</span>
             <button
               onClick={handleSend}
-              className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all shadow-xs cursor-pointer"
+              aria-label="Start WhatsApp conversation in new window"
+              className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all shadow-xs cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-hidden"
             >
               <span>Start WhatsApp</span>
-              <ExternalLink className="w-3.5 h-3.5" />
+              <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
             </button>
           </div>
         </div>

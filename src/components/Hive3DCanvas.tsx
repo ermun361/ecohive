@@ -331,21 +331,32 @@ export const Hive3DCanvas: React.FC<Props> = ({ activePartId, onSelectPart }) =>
   }, [autoRotate, onSelectPart]);
 
   return (
-    <div className="relative w-full h-[450px] rounded-3xl overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl flex flex-col justify-between">
+    <div
+      role="region"
+      aria-label="Interactive 3D WebGL Model of Langstroth Beehive"
+      className="relative w-full h-[450px] rounded-3xl overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl flex flex-col justify-between"
+    >
       {/* 3D Canvas Container with touch-action pan-y */}
-      <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing touch-pan-y" />
+      <div
+        ref={containerRef}
+        role="img"
+        aria-label="3D rendering of EcoHive beehive components"
+        className="w-full h-full cursor-grab active:cursor-grabbing touch-pan-y"
+      />
 
       {/* Top Floating Controls */}
       <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
         <div className="bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-amber-400/40 text-xs font-bold text-amber-300 flex items-center gap-2 shadow-lg">
-          <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" aria-hidden="true" />
           <span>Interactive 3D WebGL</span>
         </div>
 
         <div className="flex items-center gap-2 pointer-events-auto">
           <button
             onClick={() => setExploded(!exploded)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all shadow-md cursor-pointer ${
+            aria-label={exploded ? 'Collapse beehive layers' : 'Explode 3D beehive anatomy'}
+            aria-pressed={exploded}
+            className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all shadow-md cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-hidden ${
               exploded
                 ? 'bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 border border-amber-400 ring-2 ring-amber-400/30'
                 : 'bg-slate-800/90 text-slate-200 hover:bg-slate-700 border border-amber-400/30 hover:border-amber-400'
@@ -356,7 +367,9 @@ export const Hive3DCanvas: React.FC<Props> = ({ activePartId, onSelectPart }) =>
 
           <button
             onClick={() => setAutoRotate(!autoRotate)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            aria-label={autoRotate ? 'Pause 3D auto rotation' : 'Start 3D auto rotation'}
+            aria-pressed={autoRotate}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-hidden ${
               autoRotate
                 ? 'bg-gradient-to-r from-amber-400/20 to-yellow-500/20 text-amber-300 border border-amber-400/60'
                 : 'bg-slate-800/90 text-slate-300 hover:bg-slate-700 border border-slate-700 hover:border-amber-400/40'
@@ -370,7 +383,7 @@ export const Hive3DCanvas: React.FC<Props> = ({ activePartId, onSelectPart }) =>
       {/* Bottom Floating Bar: Material Configurator + Hint */}
       <div className="absolute bottom-3 left-4 right-4 flex flex-col sm:flex-row items-center justify-between gap-2 pointer-events-none">
         {/* Material Swatches Configurator */}
-        <div className="pointer-events-auto bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-700/80 shadow-md flex items-center gap-2">
+        <div className="pointer-events-auto bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-700/80 shadow-md flex items-center gap-2" role="group" aria-label="HDPE Material Color Finishes">
           <span className="text-[11px] text-slate-400 font-medium">HDPE Finish:</span>
           <div className="flex items-center gap-1.5">
             {MATERIAL_PRESETS.map((preset) => (
@@ -378,7 +391,9 @@ export const Hive3DCanvas: React.FC<Props> = ({ activePartId, onSelectPart }) =>
                 key={preset.id}
                 onClick={() => handleSelectMaterial(preset.id)}
                 title={preset.name}
-                className={`w-5 h-5 rounded-full ${preset.bgClass} border-2 transition-all cursor-pointer ${
+                aria-label={`Select ${preset.name} material color`}
+                aria-pressed={materialTheme === preset.id}
+                className={`w-5 h-5 rounded-full ${preset.bgClass} border-2 transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-hidden ${
                   materialTheme === preset.id
                     ? 'border-amber-400 scale-110 shadow-sm shadow-amber-400/50'
                     : 'border-slate-600 hover:border-slate-400'
