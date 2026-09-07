@@ -1,6 +1,7 @@
 import React from 'react';
 import { PageType } from '../types';
 import { COMPANY_INFO } from '../data/ecohiveData';
+import { FlyRankBadge } from './FlyRankBadge';
 import {
   Hexagon,
   Mail,
@@ -14,9 +15,10 @@ import {
 
 interface Props {
   setPage: (page: PageType) => void;
+  openAnalytics?: () => void;
 }
 
-export const Footer: React.FC<Props> = ({ setPage }) => {
+export const Footer: React.FC<Props> = ({ setPage, openAnalytics }) => {
   const [newsletterEmail, setNewsletterEmail] = React.useState('');
   const [subscribed, setSubscribed] = React.useState(false);
 
@@ -196,10 +198,35 @@ export const Footer: React.FC<Props> = ({ setPage }) => {
           </div>
         </div>
 
+        {/* FlyRank AI Graduate Credential Badge Section */}
+        <div className="pt-8 pb-4 border-t border-stone-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="text-left space-y-1">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400 font-mono">
+              Certified Portfolio Verification
+            </span>
+            <p className="text-xs text-stone-300 font-body max-w-md">
+              Engineered by <strong>Eric Munyi</strong> as part of the FlyRank AI Internship &amp; Frontend AI Engineering program.
+            </p>
+          </div>
+          <div className="shrink-0">
+            <FlyRankBadge variant="banner" />
+          </div>
+        </div>
+
         {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-stone-400 gap-4 font-body">
+        <div className="pt-4 flex flex-col md:flex-row items-center justify-between text-xs text-stone-400 gap-4 font-body border-t border-stone-800/40">
           <p>© {new Date().getFullYear()} EcoHive Kenya Ltd. All rights reserved.</p>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4 sm:gap-6 flex-wrap">
+            {openAnalytics && (
+              <button
+                onClick={openAnalytics}
+                className="inline-flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 font-semibold cursor-pointer transition-colors"
+                title="View Live Web Analytics Telemetry"
+              >
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Live Analytics Dashboard</span>
+              </button>
+            )}
             <span className="hover:text-amber-300 transition-colors">ISO 22000 Ready</span>
             <span className="hover:text-amber-300 transition-colors">KEBS Certified Standards</span>
           </div>

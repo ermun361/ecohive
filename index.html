@@ -56,6 +56,15 @@
     </script>
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Privacy-Friendly Analytics Tag (EcoHive & Google Analytics Standard) -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-ECOHIVEKENYA', { anonymize_ip: true, send_page_view: false });
+      console.log('%c[EcoHive Analytics]%c Telemetry initialized over HTTPS', 'color: #f59e0b; font-weight: bold;', 'color: #10b981;');
+    </script>
   </head>
   <body>
     <div id="root"></div>

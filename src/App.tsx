@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PageType } from './types';
+import { trackPageView } from './utils/analytics';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { WhatsAppWidget } from './components/WhatsAppWidget';
@@ -10,15 +11,18 @@ import { ProductsView } from './components/ProductsView';
 import { AboutContactView } from './components/AboutContactView';
 import { IoTDashboardModal } from './components/IoTDashboardModal';
 import { AiAssistantDrawer } from './components/AiAssistantDrawer';
+import { AnalyticsModal } from './components/AnalyticsModal';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('home');
   const [telemetryOpen, setTelemetryOpen] = useState(false);
   const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
+  const [analyticsOpen, setAnalyticsOpen] = useState(false);
 
   // Auto-scroll to top when page transitions
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
+    trackPageView(currentPage);
   }, [currentPage]);
 
   return (
@@ -37,6 +41,7 @@ export default function App() {
         setPage={setCurrentPage}
         openTelemetry={() => setTelemetryOpen(true)}
         openAiAssistant={() => setAiDrawerOpen(true)}
+        openAnalytics={() => setAnalyticsOpen(true)}
       />
 
       {/* Main Page View Router */}
@@ -64,7 +69,10 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <Footer setPage={setCurrentPage} />
+      <Footer
+        setPage={setCurrentPage}
+        openAnalytics={() => setAnalyticsOpen(true)}
+      />
 
       {/* Floating WhatsApp Widget */}
       <WhatsAppWidget />
@@ -78,6 +86,11 @@ export default function App() {
       <AiAssistantDrawer
         isOpen={aiDrawerOpen}
         onClose={() => setAiDrawerOpen(false)}
+      />
+
+      <AnalyticsModal
+        isOpen={analyticsOpen}
+        onClose={() => setAnalyticsOpen(false)}
       />
     </div>
   );

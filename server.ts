@@ -1,11 +1,7 @@
 import express from 'express';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
 import { INITIAL_TELEMETRY, COMPANY_INFO } from './src/data/ecohiveData.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = 3000;
@@ -33,6 +29,15 @@ const leadsStore: Array<{
   role: string;
   targetEmail: string;
   message: string;
+  timestamp: string;
+}> = [];
+
+// Lightweight, privacy-first analytics event store
+const analyticsEvents: Array<{
+  type: string;
+  path: string;
+  referrer: string;
+  device: string;
   timestamp: string;
 }> = [];
 
@@ -162,6 +167,42 @@ app.get('/api/iot-telemetry', (req, res) => {
   res.json({
     updatedAt: new Date().toISOString(),
     nodes: dynamicTelemetry,
+  });
+});
+
+// Analytics Ingestion & Reporting Endpoints
+app.post('/api/analytics/track', (req, res) => {
+  const { type = 'pageview', path: pagePath = '/', referrer = '' } = req.body || {};
+  const userAgent = req.headers['user-agent'] || '';
+  const isMobile = /mobile|iphone|android|ipad/i.test(userAgent);
+
+  analyticsEvents.push({
+    type: String(type).slice(0, 50),
+    path: String(pagePath).slice(0, 200),
+    referrer: String(referrer).slice(0, 200),
+    device: isMobile ? 'Mobile' : 'Desktop',
+    timestamp: new Date().toISOString(),
+  });
+
+  if (analyticsEvents.length > 500) {
+    analyticsEvents.shift();
+  }
+
+  res.json({ success: true, recordedEvents: analyticsEvents.length });
+});
+
+app.get('/api/analytics/stats', (req, res) => {
+  const pageViews = analyticsEvents.filter((e) => e.type === 'pageview').length;
+  const uniquePaths = Array.from(new Set(analyticsEvents.map((e) => e.path)));
+
+  res.json({
+    status: 'online',
+    protocol: 'HTTPS',
+    totalEvents: analyticsEvents.length,
+    pageViews,
+    uniquePagesTracked: uniquePaths,
+    recentEvents: analyticsEvents.slice(-10).reverse(),
+    activeTracking: true,
   });
 });
 

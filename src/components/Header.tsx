@@ -7,6 +7,7 @@ import {
   Activity,
   Bot,
   ChevronRight,
+  BarChart3,
 } from 'lucide-react';
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
   setPage: (page: PageType) => void;
   openTelemetry: () => void;
   openAiAssistant: () => void;
+  openAnalytics?: () => void;
 }
 
 export const Header: React.FC<Props> = ({
@@ -21,6 +23,7 @@ export const Header: React.FC<Props> = ({
   setPage,
   openTelemetry,
   openAiAssistant,
+  openAnalytics,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -87,6 +90,18 @@ export const Header: React.FC<Props> = ({
 
           {/* Action Buttons */}
           <div className="hidden md:flex items-center gap-2.5">
+            {openAnalytics && (
+              <button
+                onClick={openAnalytics}
+                aria-label="View live Web Analytics telemetry"
+                className="flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-full bg-emerald-500/10 text-emerald-950 border border-emerald-500/30 hover:bg-emerald-500/20 transition-all shadow-xs cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-hidden"
+                title="View Live Web Analytics Telemetry"
+              >
+                <BarChart3 className="w-4 h-4 text-emerald-600" aria-hidden="true" />
+                <span>Analytics</span>
+              </button>
+            )}
+
             <button
               onClick={openTelemetry}
               aria-label="Open live IoT Hive Telemetry Data monitor"
@@ -157,7 +172,20 @@ export const Header: React.FC<Props> = ({
             ))}
           </div>
 
-          <div className="pt-3 border-t border-amber-400/20 grid grid-cols-2 gap-2">
+          <div className="pt-3 border-t border-amber-400/20 grid grid-cols-3 gap-2">
+            {openAnalytics && (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  openAnalytics();
+                }}
+                className="flex items-center justify-center gap-1.5 p-2.5 rounded-xl bg-emerald-500/10 text-emerald-950 text-xs font-bold border border-emerald-500/30 shadow-xs cursor-pointer"
+              >
+                <BarChart3 className="w-4 h-4 text-emerald-600" />
+                <span>Analytics</span>
+              </button>
+            )}
+
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
@@ -177,7 +205,7 @@ export const Header: React.FC<Props> = ({
               className="flex items-center justify-center gap-1.5 p-2.5 rounded-xl bg-stone-100 text-stone-800 text-xs font-bold border border-stone-200 hover:border-amber-400/40 cursor-pointer"
             >
               <Bot className="w-4 h-4 text-amber-600" />
-              <span>Ask Hive AI</span>
+              <span>Hive AI</span>
             </button>
           </div>
 
