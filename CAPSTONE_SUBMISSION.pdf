@@ -1,0 +1,369 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R 5 0 R 7 0 R 9 0 R 11 0 R] /Count 5 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 13 0 R /F2 14 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 3048 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+50 740 Td
+T*
+/F2 13 Tf
+16 TL
+T* (FlyRank Capstone   Frontend AI Engineering \(Week 8\)) Tj
+/F1 9 Tf
+13 TL
+T*
+/F2 11 Tf
+14 TL
+T* (Complete Submission Dossier: "Ship It   Your First Production AI Product") Tj
+/F1 9 Tf
+13 TL
+T* () Tj
+T* (**Candidate Name:** Eric Munyi  ) Tj
+T* (**Candidate Email:** `munyieric7@gmail.com`  ) Tj
+T* (**LinkedIn:** [https://www.linkedin.com/in/munyi-eric/]\(https://www.linkedin.com) Tj
+T* (/in/munyi-eric/\)  ) Tj
+T* (**Track:** Frontend AI Engineering  ) Tj
+T* (**Capstone Code:** FE-Capstone  ) Tj
+T* (**Production Live URL:** [https://ecohive-jet.vercel.app/]\(https://ecohive-jet.v) Tj
+T* (ercel.app/\)  ) Tj
+T* (**Live Cloud Mirror:** [https://ais-pre-vegkej4u2lmpqczdp2pstl-122122115705.euro) Tj
+T* (pe-west2.run.app]\(https://ais-pre-vegkej4u2lmpqczdp2pstl-122122115705.europe-wes) Tj
+T* (t2.run.app\)  ) Tj
+T* (**Submission Date:** September 2026  ) Tj
+T* () Tj
+T* (--------------------------------------------------------------------------------) Tj
+T* () Tj
+T*
+/F2 11 Tf
+14 TL
+T* (1. Project Brief) Tj
+/F1 9 Tf
+13 TL
+T* () Tj
+T* (**Problem:**  ) Tj
+T* (In semi-arid rural Kenya \(Nakuru, Baringo, Kitui\), smallholder beekeepers lose o) Tj
+T* (ver 40% of their potential harvest due to unmonitored hive swarming, predator at) Tj
+T* (tacks, and reliance on traditional hollow-log hives \(yielding only 8 10 kg of im) Tj
+T* (pure honey per year\). At the same time, post-consumer plastic waste clogs local ) Tj
+T* (municipal ecosystems, and beekeepers are exploited by informal middlemen paying ) Tj
+T* (below-market prices.) Tj
+T* () Tj
+T* (**Solution:**  ) Tj
+T* (**EcoHive Kenya Ltd.** engineers climate-smart Langstroth beehives manufactured ) Tj
+T* (from 100% recycled high-density polyethylene \(HDPE\) plastic waste, equipped with) Tj
+T* ( solar-powered IoT telemetry sensors \(measuring temperature, brood acoustic freq) Tj
+T* (uency, and colony weight\). The web platform unites:) Tj
+T* (1. An interactive, procedural 3D hive explorer with layer explosion and real-tim) Tj
+T* (e raycasting inspection.) Tj
+T* (2. A fluid WebGL Amber honey shader hero responding to live cursor physics.) Tj
+T* (3. A real-time IoT apiary telemetry dashboard monitoring hive health.) Tj
+T* (4. **Hive AI**, a context-grounded conversational agent powered by Google Gemini) Tj
+T* ( \(with role personas for farmers, impact investors, and honey buyers\).) Tj
+T* (5. A transparent 35% above spot-market cash off-take commercial model.) Tj
+T* () Tj
+T* (**Audience:**  ) Tj
+T* (Smallholder Kenyan beekeepers, impact & ESG investors, organic honey commercial ) Tj
+T* (off-takers, and climate technology researchers.) Tj
+T* () Tj
+T* (**Why this project?**  ) Tj
+T* (It demonstrates how advanced frontend engineering \(custom WebGL GLSL shaders, pr) Tj
+T* (ocedural Three.js 3D rendering, and resilient multi-tier LLM integration\) can di) Tj
+T* (rectly solve an ecological and economic development challenge in East Africa wit) Tj
+T* (hout sacrificing performance, accessibility, or production hygiene.) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 6 0 R /Resources << /Font << /F1 13 0 R /F2 14 0 R >> >> >>
+endobj
+6 0 obj
+<< /Length 2985 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+50 740 Td
+T* () Tj
+T* (--------------------------------------------------------------------------------) Tj
+T* () Tj
+T*
+/F2 11 Tf
+14 TL
+T* (2. Live Application & Verification) Tj
+/F1 9 Tf
+13 TL
+T* () Tj
+T* (* **Production URL:** [https://ecohive-jet.vercel.app/]\(https://ecohive-jet.verc) Tj
+T* (el.app/\)) Tj
+T* (* **Status:** Live, fully functional, 100% interactive, and zero console errors.) Tj
+T* (* **Accessibility Level:** WCAG 2.1 AA Compliant \(Verified 100 on automated acce) Tj
+T* (ssibility audits\).) Tj
+T* (* **Keyboard Navigation:** Full tab-stop navigation with visible amber focus rin) Tj
+T* (gs \(`focus-visible:ring-2 focus-visible:ring-amber-500`\) and ARIA labels on all ) Tj
+T* (modal and drawer controls.) Tj
+T* () Tj
+T* (--------------------------------------------------------------------------------) Tj
+T* () Tj
+T*
+/F2 11 Tf
+14 TL
+T* (3. Architecture & AI Integration) Tj
+/F1 9 Tf
+13 TL
+T* () Tj
+/F2 9.5 Tf
+T* (Architecture Overview) Tj
+/F1 9 Tf
+T* (```) Tj
+T* (                     [ CLIENT TIER: Browser / Mobile ]) Tj
+T* (                     React 19 + Tailwind CSS + Vite) Tj
+T* (           --------------------------------------------------) Tj
+T* (                                                             ) Tj
+T* (  [ WebGL GLSL Shader ]   [ Procedural Three.js ]   [ Multi-Turn Hive AI ]) Tj
+T* (  Interactive honey pool   Langstroth 3D box model   Persona-driven drawer) Tj
+T* (  simplex noise caustics   raycasting inspector      fast/deep model switch) Tj
+T* (           -                       -                        -) Tj
+T* (           --------------------------------------------------) Tj
+T* (                                   - HTTP REST \(JSON\)) Tj
+T* (                                    ) Tj
+T* (             [ SERVER TIER: Node.js + Express ] \(Port 3000\)) Tj
+T* (    ---------------------------------------------------------------) Tj
+T* (                                                                   ) Tj
+T* ([/api/ai-assistant]       [/api/iot-telemetry]            [/api/contact]) Tj
+T* (Cascading Gemini pipeline Real-time sensor simulation     Lead validation &) Tj
+T* (\(3.5 Flash / 3.1 Lite\)    with realistic circadian flux   priority routing) Tj
+T* (```) Tj
+T* () Tj
+/F2 9.5 Tf
+T* (AI Integration Explained) Tj
+/F1 9 Tf
+T* (* **Model Selection:** Google Gemini 3.5 Flash \(for comprehensive technical and ) Tj
+T* (investor analysis\) and Gemini 3.1 Flash-Lite \(for ultra-fast mobile interactions) Tj
+T* (\).) Tj
+T* (* **System Prompting & Role Personas:**) Tj
+T* (  - `General Guide`: Overview of EcoHive's circular economy model.) Tj
+T* (  - `Farmer Coach`: Agronomic hive troubleshooting, swarming prevention, and Lan) Tj
+T* (gstroth best practices.) Tj
+T* (  - `Investor & ESG`: HDPE plastic metrics, verified carbon offsets, and commerc) Tj
+T* (ial yield ROI.) Tj
+T* (  - `Honey Buyer`: Raw organic acacia specifications, moisture standards \(<18%\),) Tj
+T* ( and export logistics.) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 8 0 R /Resources << /Font << /F1 13 0 R /F2 14 0 R >> >> >>
+endobj
+8 0 obj
+<< /Length 3087 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+50 740 Td
+T* (* **Production Resilience & Fallback Hierarchy:**) Tj
+T* (  1. Primary call to `gemini-3.5-flash` with a 12-second execution timeout guard) Tj
+T* (.) Tj
+T* (  2. If upstream latency spikes or an error occurs, the server automatically fai) Tj
+T* (ls over to `gemini-3.1-flash-lite`.) Tj
+T* (  3. If API limits are reached, the system gracefully degrades to `gemini-flash-) Tj
+T* (latest`.) Tj
+T* (  4. If offline or completely disconnected, the system serves domain-grounded re) Tj
+T* (sponses from an in-memory knowledge base. **The UI never crashes or shows a raw ) Tj
+T* (error stack to the user.**) Tj
+T* (* **Abuse Protection:**) Tj
+T* (  - Sliding-window rate limiting: 30 requests per minute per IP.) Tj
+T* (  - Strict input clamping: Max 1,000 characters per message to prevent prompt in) Tj
+T* (jection and token exhaustion.) Tj
+T* () Tj
+T* (--------------------------------------------------------------------------------) Tj
+T* () Tj
+T*
+/F2 11 Tf
+14 TL
+T* (4. Testing Evidence) Tj
+/F1 9 Tf
+13 TL
+T* () Tj
+/F2 9.5 Tf
+T* (Critical User Flow Verification) Tj
+/F1 9 Tf
+T* (The application was tested across core interactive flows:) Tj
+T* (1. **Shader & 3D WebGL Canvas Stability:** Verified WebGL context recovery on br) Tj
+T* (owser tab switching and window resize \(`ResizeObserver`\).) Tj
+T* (2. **Hive AI Multi-Turn Conversation:** Verified that multi-turn history retains) Tj
+T* ( context across persona switches without token explosion.) Tj
+T* (3. **Contact Lead Routing:** Verified input validation on `/api/contact` ensurin) Tj
+T* (g invalid emails return `HTTP 400` with descriptive error messages.) Tj
+T* (4. **IoT Telemetry Modal:** Verified real-time telemetry updates correctly map t) Tj
+T* (emperature, weight, and acoustic data into safe ranges.) Tj
+T* () Tj
+/F2 9.5 Tf
+T* (Build & Type Verification) Tj
+/F1 9 Tf
+T* (- `tsc --noEmit` executed cleanly with **0 TypeScript compiler errors**.) Tj
+T* (- Vite production bundle compiled into single optimized bundles with zero broken) Tj
+T* ( asset references.) Tj
+T* () Tj
+T* (--------------------------------------------------------------------------------) Tj
+T* () Tj
+T*
+/F2 11 Tf
+14 TL
+T* (5. Performance & Accessibility Audit) Tj
+/F1 9 Tf
+13 TL
+T* () Tj
+T* (* **Lighthouse Accessibility Score:** **100 / 100**) Tj
+T* (* **WCAG Compliance:** WCAG 2.1 AA Passed) Tj
+T* (* **Mobile Responsiveness:** Tested and verified fluid from 375px mobile viewpor) Tj
+T* (ts up to 4K ultra-wide monitors.) Tj
+T* (* **One Concrete Improvement Made Based on Audit:**) Tj
+T* (  - *The Audit Finding:* Automated contrast testing revealed that light amber te) Tj
+T* (xt \(`text-amber-400`\) on dark stone backgrounds failed the 4.5:1 contrast ratio ) Tj
+T* (for small body text.) Tj
+T* (  - *The Fix:* Upgraded all descriptive typography to high-contrast `#FEF3C7` \(a) Tj
+T* (mber-100\) and `#F59E0B` \(amber-500 for large display headings\), added dark semi-) Tj
+T* (transparent backing plates behind floating badges, and verified all interactive ) Tj
+T* (buttons exceed a 44x44px touch target.) Tj
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 10 0 R /Resources << /Font << /F1 13 0 R /F2 14 0 R >> >> >>
+endobj
+10 0 obj
+<< /Length 3105 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+50 740 Td
+T* () Tj
+T* (--------------------------------------------------------------------------------) Tj
+T* () Tj
+T*
+/F2 11 Tf
+14 TL
+T* (6. Deployment & Safe Operations \(FE-11 Sign-Off\)) Tj
+/F1 9 Tf
+13 TL
+T* () Tj
+T* (* **Hosting Infrastructure:** Vercel Edge Network \(Production\) + Google Cloud Ru) Tj
+T* (n \(Container Mirror\).) Tj
+T* (* **Rollback Plan:** Git-tagged commits on `main`. If an upstream release fails,) Tj
+T* ( Vercel provides instant one-click rollback to the previous deployment hash with) Tj
+T* (in 5 seconds.) Tj
+T* (* **Environment Secrets:** `GEMINI_API_KEY` is strictly confined to server-side ) Tj
+T* (runtime variables; never exposed to browser bundles or client-side network inspe) Tj
+T* (ctors.) Tj
+T* (* **Monitoring:** Express privacy-respecting telemetry endpoint \(`/api/analytics) Tj
+T* (/summary`\) monitoring response times, uptime, and request counts without setting) Tj
+T* ( tracking cookies.) Tj
+T* () Tj
+T* (--------------------------------------------------------------------------------) Tj
+T* () Tj
+T*
+/F2 11 Tf
+14 TL
+T* (7. Engineering Reflection \(1 Page\)) Tj
+/F1 9 Tf
+13 TL
+T* () Tj
+/F2 9.5 Tf
+T* (What Was Hardest? Why?) Tj
+/F1 9 Tf
+T* (The most difficult engineering challenge was balancing **rich visual interactivi) Tj
+T* (ty against rural connectivity constraints**. ) Tj
+T* () Tj
+T* (Initially, the 3D smart hive could have been implemented by downloading a pre-pa) Tj
+T* (ckaged 25MB `.glb` 3D model. However, testing on simulated 3G network conditions) Tj
+T* ( \(representative of Baringo and Kitui counties\) resulted in unacceptably long lo) Tj
+T* (ading times and dropped frames on lower-end Android devices. ) Tj
+T* () Tj
+T* (To solve this, I rejected heavy asset files completely and engineered the entire) Tj
+T* ( Langstroth hive **procedurally using Three.js primitive geometries, custom canv) Tj
+T* (as wood textures, and mathematical mesh layering**. This reduced the asset load ) Tj
+T* (to literally zero additional network payload, allowing the 3D canvas to initiali) Tj
+T* (ze in under 200 milliseconds while still supporting camera orbiting and box laye) Tj
+T* (r explosion.) Tj
+T* () Tj
+/F2 9.5 Tf
+T* (What Would I Do Differently Next Time?) Tj
+/F1 9 Tf
+T* (If building this from day one again, I would implement **IndexedDB client-side t) Tj
+T* (elemetry caching** earlier in the architecture. While the live telemetry API int) Tj
+T* (erpolates sensor fluctuations cleanly, having an offline-first service worker ca) Tj
+T* (che would allow field officers in remote apiaries with zero GSM connectivity to ) Tj
+T* (browse historical hive weight curves and queue their notes locally until cellula) Tj
+T* (r signal is restored.) Tj
+T* () Tj
+/F2 9.5 Tf
+T* (One Thing I Learned That Surprised Me) Tj
+/F1 9 Tf
+T* (I was surprised by how much **system prompt persona engineering influences user ) Tj
+T* (engagement depth**. ) Tj
+T* () Tj
+T* (Early iterations of the AI assistant used a single generic chatbot prompt that s) Tj
+T* (ounded like a generic customer support agent. By segmenting the AI into 4 specia) Tj
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 12 0 R /Resources << /Font << /F1 13 0 R /F2 14 0 R >> >> >>
+endobj
+12 0 obj
+<< /Length 545 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+50 740 Td
+T* (lized domain roles \(`Farmer Coach`, `Investor & ESG`, `Honey Buyer`, and `Genera) Tj
+T* (l Guide`\) and providing pre-computed follow-up chips, the conversation shifted f) Tj
+T* (rom generic questions to specific agronomic and financial inquiries \(such as moi) Tj
+T* (sture content standards, swarming acoustic frequencies, and HDPE recycling ratio) Tj
+T* (s\). Purposeful AI design isn't about the model's raw parameters it's about the p) Tj
+T* (recision of the contextual boundary you give it.) Tj
+T* () Tj
+ET
+endstream
+endobj
+13 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+14 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+xref
+0 15
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000140 00000 n 
+0000000278 00000 n 
+0000003378 00000 n 
+0000003516 00000 n 
+0000006553 00000 n 
+0000006691 00000 n 
+0000009830 00000 n 
+0000009969 00000 n 
+0000013127 00000 n 
+0000013267 00000 n 
+0000013864 00000 n 
+0000013935 00000 n 
+trailer
+<< /Size 15 /Root 1 0 R >>
+startxref
+14011
+%%EOF
