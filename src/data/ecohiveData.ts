@@ -6,20 +6,20 @@ export const COMPANY_INFO = {
   tagline: "Building Africa's Technology-Enabled Honey Value Chain",
   founded: '2024',
   location: 'Nairobi & Apiary Clusters Across Kenya',
-  phone: '+254 726 988 151',
+  phone: '+254741076205',
   emails: {
     general: 'Info@ecohivekenya.com',
-    ceo: 'Gitau@ecohivekenya.com',
+    ceo: 'ericmunyi361@gmail.com',
     operations: 'Andika@ecohivekenya.com',
   },
   social: {
-    linkedin: 'https://linkedin.com/in/peterbuildsafrica',
-    whatsapp: 'https://wa.me/254726988151',
+    linkedin: 'https://www.linkedin.com/in/munyi-eric/',
+    whatsapp: 'https://wa.me/254741076205',
   },
   ceo: {
-    name: 'Peter Gitau',
+    name: 'Eric Munyi',
     title: 'Chief Executive Officer & Founder',
-    bio: 'Peter Gitau is an agricultural technology innovator passionate about modernizing African rural economies. Under his leadership, EcoHive Kenya Ltd. is creating a sustainable, climate-resilient honey value chain by fusing IoT sensor hardware, recycled plastic manufacturing, and direct farmer empowerment.',
+    bio: 'Eric Munyi is an agricultural technology innovator passionate about modernizing African rural economies. Under his leadership, EcoHive Kenya Ltd. is creating a sustainable, climate-resilient honey value chain by fusing IoT sensor hardware, recycled plastic manufacturing, and direct farmer empowerment.',
     quote: '"Climate-smart technology shouldn\'t be a buzzword reserved for tech labs—it belongs in the hands of every African farmer to unlock natural wealth and preserve biodiversity."',
   },
 };
@@ -135,7 +135,7 @@ export const PRODUCTS: ProductItem[] = [
 export const WORKLOG_TASKS: WorklogTask[] = [
   {
     phase: 'Phase 1: Discovery & Assets',
-    description: 'Audit brand assets, upscale 3D hive renders, background treatment for CEO Peter Gitau photo.',
+    description: 'Audit brand assets, upscale 3D hive renders, background treatment for CEO Eric Munyi photo.',
     deliverables: 'High-resolution image library & brand guidelines',
     status: 'Completed',
     category: 'Design',

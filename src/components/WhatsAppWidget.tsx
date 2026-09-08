@@ -5,7 +5,7 @@ export const WhatsAppWidget: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('Hello EcoHive Kenya! I would like to inquire about the Climate-Smart Beehive.');
 
-  const whatsappNumber = '254726988151'; // From company phone +254 726 988 151
+  const whatsappNumber = '254741076205'; // From company phone +254 741 076 205
 
   // Handle Escape key to close dialog
   useEffect(() => {
@@ -121,7 +121,7 @@ export const WhatsAppWidget: React.FC = () => {
 
           {/* Footer CTA */}
           <div className="p-3 bg-white border-t border-amber-100 flex items-center justify-between">
-            <span className="text-[10px] text-stone-600 font-mono font-medium">+254 726 988 151</span>
+            <span className="text-[10px] text-stone-600 font-mono font-medium">+254 741 076 205</span>
             <button
               onClick={handleSend}
               aria-label="Start WhatsApp conversation in new window"

@@ -145,7 +145,7 @@ export const PRODUCTS_LIST: ProductItem[] = [
 export const WORKLOG_DATA: WorklogTask[] = [
   {
     phase: '1. Discovery & Assets',
-    description: 'Audit provided images. Upscale 3D hive renders and logos. Clean background treatment for CEO Peter Gitau portrait.',
+    description: 'Audit provided images. Upscale 3D hive renders and logos. Clean background treatment for CEO Eric Munyi portrait.',
     deliverable: 'High-res Asset Library & Brand Guidelines',
     status: 'Completed',
     assignee: 'Project Lead',
@@ -194,7 +194,7 @@ export const WORKLOG_DATA: WorklogTask[] = [
   },
   {
     phase: '8. Contact & Integrations',
-    description: 'Setup floating WhatsApp widget, inquiry directory routing (info@, gitau@, andika@), and location map.',
+    description: 'Setup floating WhatsApp widget, inquiry directory routing (info@, ericmunyi361@, andika@), and location map.',
     deliverable: 'Contact Hub & Lead Generation Form',
     status: 'Completed',
     assignee: 'Integrations Lead',

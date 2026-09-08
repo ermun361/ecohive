@@ -21,7 +21,7 @@ const sectionHeaderVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const },
   },
 };
 
@@ -41,7 +41,7 @@ const cardItemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] as const },
   },
 };
 
@@ -517,7 +517,7 @@ export const HomeView: React.FC<Props> = ({ setPage, openTelemetry }) => {
               <div className="relative inline-block">
                 <img
                   src={IMAGES.ceoPeterGitau}
-                  alt="Peter Gitau, Founder and Chief Executive Officer of EcoHive Kenya Ltd."
+                  alt="Eric Munyi, Founder and Chief Executive Officer of EcoHive Kenya Ltd."
                   width="224"
                   height="224"
                   className="w-48 h-48 sm:w-56 sm:h-56 rounded-2xl object-cover mx-auto shadow-xl border-4 border-amber-400/50"
@@ -563,7 +563,7 @@ export const HomeView: React.FC<Props> = ({ setPage, openTelemetry }) => {
                   onClick={() => setPage('about-contact')}
                   className="bg-stone-900 hover:bg-stone-800 text-amber-400 hover:text-yellow-400 font-black px-6 py-3 rounded-full text-sm shadow-md transition-all flex items-center gap-2 border border-amber-400/30 hover:border-yellow-500 cursor-pointer"
                 >
-                  <span>Contact CEO Office (Gitau@ecohivekenya.com)</span>
+                  <span>Contact CEO Office ({COMPANY_INFO.emails.ceo})</span>
                   <span>→</span>
                 </motion.button>
               </div>

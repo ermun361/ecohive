@@ -9,6 +9,8 @@ import {
   Send,
   CheckCircle2,
   AlertCircle,
+  Linkedin,
+  ExternalLink,
 } from 'lucide-react';
 
 export const AboutContactView: React.FC = () => {
@@ -130,7 +132,7 @@ export const AboutContactView: React.FC = () => {
             <div className="relative inline-block">
               <img
                 src={IMAGES.ceoPeterGitau}
-                alt="Peter Gitau CEO EcoHive Kenya Ltd."
+                alt="Eric Munyi CEO EcoHive Kenya Ltd."
                 width="256"
                 height="256"
                 className="w-52 h-52 sm:w-64 sm:h-64 rounded-3xl object-cover mx-auto shadow-2xl border-4 border-amber-400/60"
@@ -162,6 +164,37 @@ export const AboutContactView: React.FC = () => {
             <p className="text-amber-100/90 text-sm leading-relaxed font-body">
               {COMPANY_INFO.ceo.bio}
             </p>
+
+            {/* Direct Connect Buttons */}
+            <div className="pt-2 flex flex-wrap items-center gap-3">
+              <a
+                href={COMPANY_INFO.social.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-[#0A66C2] hover:bg-[#004182] text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm border border-blue-400/40"
+              >
+                <Linkedin className="w-4 h-4" />
+                <span>Connect on LinkedIn</span>
+                <ExternalLink className="w-3 h-3 opacity-80" />
+              </a>
+
+              <a
+                href={`mailto:${COMPANY_INFO.emails.ceo}`}
+                className="inline-flex items-center gap-2 bg-stone-900/90 hover:bg-stone-900 text-amber-300 text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm border border-amber-400/40"
+              >
+                <Mail className="w-4 h-4 text-amber-400" />
+                <span>Direct Email</span>
+              </a>
+
+              <a
+                href={COMPANY_INFO.social.whatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-emerald-700/80 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm border border-emerald-400/40"
+              >
+                <span>WhatsApp: {COMPANY_INFO.phone}</span>
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -198,7 +231,7 @@ export const AboutContactView: React.FC = () => {
             </a>
           </div>
 
-          {/* Gitau@ */}
+          {/* Eric Munyi / CEO Office */}
           <div className="bg-white p-6 rounded-3xl border-2 border-amber-400 shadow-lg space-y-3 relative hover:border-yellow-500 transition-all">
             <span className="absolute -top-3 right-4 bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 text-[10px] font-black px-3.5 py-0.5 rounded-full uppercase border border-amber-400 shadow-xs">
               CEO Office
@@ -208,14 +241,28 @@ export const AboutContactView: React.FC = () => {
             </div>
             <h3 className="text-base font-black text-stone-900 font-display">Partnerships & Investors</h3>
             <p className="text-stone-600 text-xs leading-relaxed font-body">
-              Direct connection to CEO Peter Gitau for investment, carbon credits, and institutional partnerships.
+              Direct connection to CEO Eric Munyi for investment, carbon credits, and institutional partnerships.
             </p>
-            <a
-              href={`mailto:${COMPANY_INFO.emails.ceo}`}
-              className="text-xs font-mono font-black text-amber-800 hover:underline block pt-2"
-            >
-              ✉ {COMPANY_INFO.emails.ceo}
-            </a>
+            <div className="pt-2 flex flex-col gap-1.5">
+              <a
+                href={`mailto:${COMPANY_INFO.emails.ceo}`}
+                className="text-xs font-mono font-black text-amber-800 hover:underline flex items-center gap-1.5"
+              >
+                <Mail className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                <span>{COMPANY_INFO.emails.ceo}</span>
+              </a>
+
+              <a
+                href={COMPANY_INFO.social.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-bold text-[#0A66C2] hover:text-[#004182] flex items-center gap-1.5 hover:underline"
+              >
+                <Linkedin className="w-3.5 h-3.5 shrink-0" />
+                <span>LinkedIn: in/munyi-eric</span>
+                <ExternalLink className="w-3 h-3 opacity-80" />
+              </a>
+            </div>
           </div>
 
           {/* Andika@ */}
@@ -323,7 +370,7 @@ export const AboutContactView: React.FC = () => {
                       setFormData({ ...formData, name: e.target.value });
                       if (formError) setFormError('');
                     }}
-                    placeholder="e.g. Peter Gitau"
+                    placeholder="e.g. Eric Munyi"
                     className="w-full bg-stone-50 border border-stone-200 rounded-2xl px-4 py-3 text-xs text-stone-900 focus:outline-hidden focus:border-amber-400 focus-visible:ring-2 focus-visible:ring-amber-500 disabled:opacity-50"
                   />
                 </div>

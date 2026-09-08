@@ -44,8 +44,8 @@ const analyticsEvents: Array<{
 // Production Rate Limiter for AI endpoints (sliding window per IP)
 const aiRateLimitStore = new Map<string, { count: number; resetAt: number }>();
 const AI_RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
-const AI_MAX_REQUESTS_PER_WINDOW = 10;      // max 10 requests per minute per IP
-const AI_MAX_INPUT_CHARS = 500;             // strict input cap to protect tokens
+const AI_MAX_REQUESTS_PER_WINDOW = 30;      // max 30 requests per minute per IP for fluid multi-turn chat
+const AI_MAX_INPUT_CHARS = 1000;            // support detailed questions
 
 function checkAiRateLimit(ip: string): { allowed: boolean; remaining: number; retryAfterSec: number } {
   const now = Date.now();
@@ -65,13 +65,20 @@ function checkAiRateLimit(ip: string): { allowed: boolean; remaining: number; re
   return { allowed: true, remaining: AI_MAX_REQUESTS_PER_WINDOW - record.count, retryAfterSec: 0 };
 }
 
-// Lazy Gemini AI initialization
+// Lazy Gemini AI initialization with recommended User-Agent
 let aiClient: GoogleGenAI | null = null;
 function getAiClient(): GoogleGenAI | null {
   if (!aiClient) {
     const key = process.env.GEMINI_API_KEY;
     if (key && key !== 'MY_GEMINI_API_KEY') {
-      aiClient = new GoogleGenAI({ apiKey: key });
+      aiClient = new GoogleGenAI({
+        apiKey: key,
+        httpOptions: {
+          headers: {
+            'User-Agent': 'aistudio-build',
+          },
+        },
+      });
     }
   }
   return aiClient;
@@ -118,7 +125,7 @@ app.post('/api/contact', (req, res) => {
   // Determine appropriate routing email based on user intent if not specified
   let destination = targetEmail || COMPANY_INFO.emails.general;
   if (cleanRole === 'Investor') {
-    destination = COMPANY_INFO.emails.ceo; // Gitau@ecohivekenya.com
+    destination = COMPANY_INFO.emails.ceo; // ericmunyi361@gmail.com
   } else if (cleanRole === 'Farmer' || cleanRole === 'Retailer / Buyer') {
     destination = COMPANY_INFO.emails.operations; // Andika@ecohivekenya.com
   }
@@ -230,7 +237,57 @@ app.get('/api/analytics/stats', (req, res) => {
   });
 });
 
-// Gemini AI Assistant Endpoint with Production Rate Limiting & Input Caps
+// System Instructions for distinct EcoHive Assistant Roles
+const AI_ROLE_INSTRUCTIONS: Record<string, string> = {
+  general: `You are Hive AI, the intelligent, conversational virtual ambassador for EcoHive Kenya Ltd.
+Company Profile & Facts:
+- Company: EcoHive Kenya Ltd.
+- Founder & CEO: Eric Munyi (Direct Contact: ericmunyi361@gmail.com, Phone/WhatsApp: +254741076205, LinkedIn: https://www.linkedin.com/in/munyi-eric/)
+- Operations & Farmer Relations: Andika (Email: Andika@ecohivekenya.com)
+- General Inquiries: Info@ecohivekenya.com
+- Location: Headquartered in Nairobi with active apiary clusters in Nakuru, Baringo, and Kitui counties, Kenya.
+- Mission: Modernizing Africa's honey value chain through our People-Planet-Profit model.
+- Core Innovation: Climate-Smart Langstroth Beehive made from 100% UV-stabilized recycled post-consumer HDPE plastic and agricultural crop waste (25+ year lifespan, termite-proof, prevents deforestation).
+- Solar IoT Telemetry: Built-in solar GSM sensors monitoring brood temperature (target 34-36°C), internal acoustic swarming frequencies (450-500Hz warning threshold), and live colony weight.
+- Products: Pure unfiltered raw organic honey (<18% moisture), medical-grade propolis tinctures, and cosmetic-grade beeswax.
+- Community Impact: 1,200+ smallholder beekeepers supported with guaranteed cash off-take at 35% above spot market; 15+ metric tons of plastic waste diverted from landfills.
+
+Persona & Rules:
+- Be interactive, warm, concise, and helpful.
+- Keep responses engaging with Markdown formatting (bullet points, bold highlights).
+- Offer practical follow-up avenues.
+- If asked about CEO or leadership, highlight Founder & CEO Eric Munyi and his vision for tech-enabled African agriculture.`,
+
+  farmer: `You are Hive AI in Agronomist & Beekeeper Coach role for EcoHive Kenya Ltd.
+Your Expertise:
+- Helping Kenyan smallholder beekeepers optimize colony health, honey yields, and apiary management using EcoHive's Climate-Smart Beehives.
+- Advising on thermal control (recycled plastic composite retains warmth during cold nights), brood temperature monitoring (ideal 34-36°C), and acoustic frequency telemetry to prevent swarming before it happens.
+- Explaining how non-invasive digital weight sensors allow timely super additions and harvesting without opening the hive and disturbing the bees.
+- Explaining EcoHive's guaranteed farmer off-take contracts and training programs.
+- To register as an out-grower or request hives, direct them to Operations Lead Andika (Andika@ecohivekenya.com) or call +254741076205.
+Tone: Encouraging, practical, accessible, respectful of local farming conditions.`,
+
+  investor: `You are Hive AI in Investor & ESG Strategy role for EcoHive Kenya Ltd.
+Your Expertise:
+- Presenting EcoHive Kenya Ltd. to venture capitalists, impact funds, and carbon credit brokers.
+- Founder & CEO: Eric Munyi (Direct Email: ericmunyi361@gmail.com, Phone: +254741076205).
+- Opportunity: Transforming the informal African honey trade into a tech-enabled, export-grade, traceable value chain.
+- Competitive Edge: Patented durable recycled-plastic hive manufacturing, proprietary solar IoT telemetry hardware, integrated out-grower network of 1,200+ farmers.
+- Traction & Unit Economics: Superior yield per hive (35-45 kg/year vs 8-10 kg in traditional log hives), high gross margins on value-added honey and propolis products.
+- ESG Impact: 15+ tons plastic diverted, climate-smart reforestation corridors, 45% women and youth inclusion.
+Tone: Commercially astute, metric-focused, visionary, professional.`,
+
+  buyer: `You are Hive AI in Honey Buyer & Quality Specialist role for EcoHive Kenya Ltd.
+Your Expertise:
+- Working with commercial food buyers, supermarkets, organic retailers, and international export partners.
+- Standards: EcoHive raw organic honey is cold-filtered, unpasteurized, strictly below 18% moisture content, free of antibiotics or agricultural chemical residues.
+- Single-origin traceability: QR-code tracked back to apiary clusters in Nakuru, Kitui, and Baringo.
+- Products: Bulk 25kg buckets, 500g and 250g retail jars, raw propolis chunks, 30ml propolis tinctures, and premium beeswax blocks.
+- Wholesale & Export Orders: Contact Info@ecohivekenya.com or Operations (Andika@ecohivekenya.com).
+Tone: Quality-assured, transparent, commercial, responsive.`
+};
+
+// Gemini AI Assistant Endpoint with Multi-Turn Interactive Conversation Support
 app.post('/api/ai-assistant', async (req, res) => {
   try {
     // 1. IP-Based Sliding Window Rate Limiting
@@ -243,75 +300,165 @@ app.post('/api/ai-assistant', async (req, res) => {
     if (!rateLimit.allowed) {
       res.setHeader('Retry-After', rateLimit.retryAfterSec.toString());
       res.status(429).json({
-        error: 'Rate limit exceeded. Please wait before asking another question.',
+        error: 'Rate limit exceeded. Please wait a moment before sending another message.',
         retryAfter: rateLimit.retryAfterSec,
       });
       return;
     }
 
-    const { message } = req.body;
+    const { message, history, role = 'general', mode = 'balanced' } = req.body;
 
-    // 2. Input Validation & Strict Character Cap
+    // 2. Input Validation & Character Cap
     if (!message || typeof message !== 'string' || !message.trim()) {
       res.status(400).json({ error: 'Message must be a non-empty string.' });
       return;
     }
 
-    const trimmed = message.trim();
-    if (trimmed.length > AI_MAX_INPUT_CHARS) {
+    const cleanMessage = message.trim();
+    if (cleanMessage.length > AI_MAX_INPUT_CHARS) {
       res.status(400).json({
-        error: `Input exceeds maximum allowed length of ${AI_MAX_INPUT_CHARS} characters (received ${trimmed.length}).`,
+        error: `Input exceeds maximum allowed length of ${AI_MAX_INPUT_CHARS} characters.`,
       });
       return;
     }
 
-    const cleanMessage = trimmed;
+    const selectedRole = AI_ROLE_INSTRUCTIONS[role] ? role : 'general';
+    const systemInstruction = AI_ROLE_INSTRUCTIONS[selectedRole];
+
+    // Select primary model per guidelines:
+    // - gemini-3.1-flash-lite for fast tasks
+    // - gemini-3.5-flash for general tasks
+    const primaryModel = mode === 'fast' ? 'gemini-3.1-flash-lite' : 'gemini-3.5-flash';
+    const fallbackModel = primaryModel === 'gemini-3.5-flash' ? 'gemini-3.1-flash-lite' : 'gemini-3.5-flash';
 
     const ai = getAiClient();
     if (!ai) {
-      // Fallback response if GEMINI_API_KEY is not configured
+      // Intelligent topic-aware response when API key is unconfigured
+      const lower = cleanMessage.toLowerCase();
+      let reply = `Welcome to EcoHive Kenya Ltd.! We are modernizing African agriculture through IoT climate-smart beehives made from 100% recycled plastic.`;
+      if (lower.includes('eric') || lower.includes('munyi') || lower.includes('ceo') || lower.includes('founder') || lower.includes('leadership')) {
+        reply = `**Eric Munyi** is the Founder & CEO of EcoHive Kenya Ltd. He is pioneering climate-smart apiculture across East Africa by uniting IoT hardware, circular plastic recycling, and smallholder empowerment. You can reach his office directly at **${COMPANY_INFO.emails.ceo}** or via WhatsApp/Phone at **${COMPANY_INFO.phone}**.`;
+      } else if (lower.includes('spec') || lower.includes('hive') || lower.includes('iot') || lower.includes('sensor') || lower.includes('plastic')) {
+        reply = `Our **Climate-Smart Langstroth Beehive** features:\n- **Material:** 100% UV-stabilized recycled HDPE plastic + agricultural crop fibers (25+ year lifespan, termite & honey-badger proof).\n- **Solar IoT Telemetry:** Real-time brood temperature monitoring (34-36°C), acoustic swarming frequency alerts (450-500 Hz), and automated colony weight sensors.\n- **Thermal Efficiency:** 2.4x higher insulation than traditional cedar or cypress wood.`;
+      } else if (lower.includes('invest') || lower.includes('partner') || lower.includes('fund') || lower.includes('esg')) {
+        reply = `EcoHive Kenya is opening investment and strategic partnership rounds for expanding our out-grower network (1,200+ beekeepers) and industrial recycled plastic manufacturing. Direct partnership discussions are managed by CEO Eric Munyi at **${COMPANY_INFO.emails.ceo}**.`;
+      } else if (lower.includes('honey') || lower.includes('buy') || lower.includes('order') || lower.includes('price')) {
+        reply = `EcoHive Kenya produces certified organic raw acacia & wildflower honey (<18% moisture), raw & liquid propolis tinctures, and all-natural beeswax blocks. For wholesale orders and export inquiries, contact **${COMPANY_INFO.emails.operations}** or **${COMPANY_INFO.emails.general}**.`;
+      }
       res.json({
-        reply: `EcoHive Kenya Ltd. is modernizing African agriculture through IoT climate-smart beehives made from 100% recycled plastic. You can contact Peter Gitau (CEO) at Gitau@ecohivekenya.com or Operations at Andika@ecohivekenya.com. Phone: +254 726 988 151.`,
+        reply,
+        modelUsed: 'local-knowledge',
+        suggestedFollowUps: ['What are the IoT sensor specs?', 'Who is CEO Eric Munyi?', 'How can I become an out-grower?'],
       });
       return;
     }
 
-    const prompt = `You are Hive AI, the intelligent virtual assistant for EcoHive Kenya Ltd.
-Company Details:
-- Name: EcoHive Kenya Ltd.
-- Slogan: "People | Planet | Profit"
-- Tagline: "Building Africa’s Technology-Enabled Honey Value Chain"
-- CEO: Peter Gitau (Email: Gitau@ecohivekenya.com)
-- Operations & Sales: Andika (Email: Andika@ecohivekenya.com)
-- General Info: Info@ecohivekenya.com
-- Phone: +254 726 988 151
-- Flagship Product: Climate-Smart Langstroth Beehive made from UV-stabilized recycled HDPE plastic and thermal agricultural fiber composites, equipped with solar IoT telemetry sensors (Temperature, Weight, Acoustics).
-- Products: Organic Raw Honey, Medical-grade Propolis, Beeswax Soap.
-- Mission: Empower Kenyan beekeeping families, eliminate plastic waste, and create high-yield traceable honey for global export.
+    // Build multi-turn contents array
+    const contents: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> = [];
 
-User question: "${cleanMessage}"
+    if (Array.isArray(history)) {
+      // Include the last 10 turns to maintain fluid conversation context
+      const validHistory = history.slice(-10);
+      for (const turn of validHistory) {
+        if (
+          turn &&
+          typeof turn.text === 'string' &&
+          turn.text.trim() &&
+          (turn.role === 'user' || turn.role === 'model')
+        ) {
+          contents.push({
+            role: turn.role,
+            parts: [{ text: turn.text.trim() }],
+          });
+        }
+      }
+    }
 
-Provide a friendly, authoritative, dual-tone answer (balancing technical specs for investors with community warmth for farmers). Keep response concise (under 150 words).`;
-
-    // 3. Execution with 15-second max duration timeout guard
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('AI inference timeout exceeded (15s)')), 15000)
-    );
-
-    const generatePromise = ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
+    // Append current user message
+    contents.push({
+      role: 'user',
+      parts: [{ text: cleanMessage }],
     });
 
-    const response: any = await Promise.race([generatePromise, timeoutPromise]);
+    // Helper to generate content with fallback
+    async function generateWithModel(modelName: string): Promise<string> {
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error(`AI inference timeout (12s) for ${modelName}`)), 12000)
+      );
 
-    const reply = response.text || 'Thank you for contacting EcoHive Kenya Ltd. Please reach out to Info@ecohivekenya.com for more details.';
-    res.json({ reply });
+      const generatePromise = ai!.models.generateContent({
+        model: modelName,
+        contents,
+        config: {
+          systemInstruction,
+          temperature: 0.7,
+        },
+      });
+
+      const response = await Promise.race([generatePromise, timeoutPromise]);
+      return response.text || '';
+    }
+
+    let botReply = '';
+    let usedModel = primaryModel;
+
+    try {
+      botReply = await generateWithModel(primaryModel);
+    } catch (primaryErr) {
+      console.warn(`Primary model ${primaryModel} failed, trying fallback ${fallbackModel}:`, primaryErr);
+      try {
+        botReply = await generateWithModel(fallbackModel);
+        usedModel = fallbackModel;
+      } catch (fallbackErr) {
+        console.warn(`Fallback model ${fallbackModel} also failed, trying gemini-flash-latest:`, fallbackErr);
+        botReply = await generateWithModel('gemini-flash-latest');
+        usedModel = 'gemini-flash-latest';
+      }
+    }
+
+    if (!botReply) {
+      botReply = `EcoHive Kenya Ltd. provides climate-smart beehives made from 100% recycled plastic with solar IoT telemetry. For direct inquiries, email ${COMPANY_INFO.emails.general} or contact CEO Eric Munyi at ${COMPANY_INFO.emails.ceo}.`;
+    }
+
+    // Dynamic suggested follow-ups based on query context
+    const lower = cleanMessage.toLowerCase();
+    let suggestedFollowUps = ['What are the Smart Hive specs?', 'How can I partner with EcoHive?', 'Who is CEO Eric Munyi?'];
+    if (lower.includes('spec') || lower.includes('iot') || lower.includes('sensor')) {
+      suggestedFollowUps = ['How does acoustic swarming alert work?', 'What is the hive battery life?', 'How to buy a Smart Hive?'];
+    } else if (lower.includes('eric') || lower.includes('ceo') || lower.includes('founder') || lower.includes('munyi')) {
+      suggestedFollowUps = ['How can I email CEO Eric Munyi?', 'What is EcoHive’s 2026 expansion roadmap?', 'Tell me about the People-Planet-Profit model'];
+    } else if (lower.includes('invest') || lower.includes('partner') || lower.includes('esg')) {
+      suggestedFollowUps = ['What are the carbon credit benefits?', 'How much plastic is recycled per hive?', 'Request investor deck from Eric Munyi'];
+    } else if (lower.includes('farmer') || lower.includes('yield') || lower.includes('harvest') || lower.includes('bee')) {
+      suggestedFollowUps = ['What is the ideal brood temperature?', 'How does the off-take payment work?', 'Contact Operations Lead Andika'];
+    }
+
+    res.json({
+      reply: botReply,
+      modelUsed: usedModel,
+      role: selectedRole,
+      suggestedFollowUps,
+    });
   } catch (error: any) {
-    console.error('Gemini API Error:', error);
-    res.status(500).json({
-      error: 'Failed to process query',
-      reply: 'EcoHive Kenya Ltd. offers climate-smart beehives and IoT value chain solutions. For direct queries, email Info@ecohivekenya.com.',
+    console.error('Gemini Assistant Error:', error);
+    // Dynamic contextual fallback rather than a static duplicate response
+    const cleanMsg = String(req.body?.message || '');
+    const lower = cleanMsg.toLowerCase();
+    let dynamicReply = `EcoHive Kenya Ltd. is modernizing African beekeeping with 100% recycled plastic IoT Langstroth beehives.`;
+    if (lower.includes('eric') || lower.includes('munyi') || lower.includes('ceo')) {
+      dynamicReply = `**Eric Munyi** is the Founder & CEO of EcoHive Kenya Ltd. You can reach him directly at **${COMPANY_INFO.emails.ceo}** or by phone at **${COMPANY_INFO.phone}**.`;
+    } else if (lower.includes('spec') || lower.includes('sensor') || lower.includes('hive')) {
+      dynamicReply = `Our **Climate-Smart Hive** is built from 100% recycled HDPE plastic (lasts 25+ years) and includes solar GSM telemetry tracking brood temperature (34-36°C), acoustic swarming frequencies, and colony weight.`;
+    } else if (lower.includes('invest') || lower.includes('partner')) {
+      dynamicReply = `EcoHive Kenya Ltd. partners with impact investors and ESG funds. Contact Founder & CEO Eric Munyi at **${COMPANY_INFO.emails.ceo}** for our investor pitch book.`;
+    } else {
+      dynamicReply = `EcoHive Kenya Ltd. empowers smallholder beekeepers through solar IoT beehives and high-grade organic honey processing. Feel free to contact our team at **${COMPANY_INFO.emails.general}** or call **${COMPANY_INFO.phone}**.`;
+    }
+
+    res.json({
+      reply: dynamicReply,
+      modelUsed: 'offline-knowledge-base',
+      suggestedFollowUps: ['What are the Smart Hive specs?', 'Contact CEO Eric Munyi', 'How do farmers join?'],
     });
   }
 });

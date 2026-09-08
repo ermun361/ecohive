@@ -88,6 +88,6 @@ export interface ContactFormInput {
   email: string;
   phone: string;
   category: 'Investor / Partner' | 'Farmer / Beekeeper' | 'Retailer / Wholesale' | 'General Inquiry';
-  targetContact: 'info@ecohivekenya.com' | 'gitau@ecohivekenya.com' | 'andika@ecohivekenya.com';
+  targetContact: 'info@ecohivekenya.com' | 'ericmunyi361@gmail.com' | 'andika@ecohivekenya.com';
   message: string;
 }

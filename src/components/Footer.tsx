@@ -11,6 +11,8 @@ import {
   ShieldCheck,
   Globe,
   Send,
+  Linkedin,
+  ExternalLink,
 } from 'lucide-react';
 
 interface Props {
@@ -128,7 +130,7 @@ export const Footer: React.FC<Props> = ({ setPage, openAnalytics }) => {
               </li>
 
               <li className="bg-stone-900 p-3 rounded-2xl border border-amber-500/20">
-                <span className="text-amber-300 font-bold block">Partnerships & CEO (Peter Gitau):</span>
+                <span className="text-amber-300 font-bold block">Partnerships & CEO (Eric Munyi):</span>
                 <a href={`mailto:${COMPANY_INFO.emails.ceo}`} className="text-white hover:text-amber-200 flex items-center gap-1 font-mono mt-0.5">
                   <Mail className="w-3.5 h-3.5 text-amber-400" />
                   <span>{COMPANY_INFO.emails.ceo}</span>
@@ -207,6 +209,19 @@ export const Footer: React.FC<Props> = ({ setPage, openAnalytics }) => {
             <p className="text-xs text-stone-300 font-body max-w-md">
               Engineered by <strong>Eric Munyi</strong> as part of the FlyRank AI Internship &amp; Frontend AI Engineering program.
             </p>
+            <div className="pt-0.5">
+              <a
+                href={COMPANY_INFO.social.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs text-[#54E399] hover:underline font-semibold"
+                aria-label="Eric Munyi LinkedIn Profile"
+              >
+                <Linkedin className="w-3.5 h-3.5" />
+                <span>LinkedIn: in/munyi-eric</span>
+                <ExternalLink className="w-3 h-3 opacity-80" />
+              </a>
+            </div>
           </div>
           <div className="shrink-0">
             <FlyRankBadge variant="banner" />

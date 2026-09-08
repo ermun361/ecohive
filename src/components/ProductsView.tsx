@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ProductItem } from '../types';
+import { ProductItem, PageType } from '../types';
 import { PRODUCTS } from '../data/ecohiveData';
 import { IMAGES } from '../data/images';
 import {
@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 
 interface Props {
-  setPage: (page: string) => void;
+  setPage: (page: PageType) => void;
 }
 
 export const ProductsView: React.FC<Props> = ({ setPage }) => {
