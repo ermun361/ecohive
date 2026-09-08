@@ -1,7 +1,9 @@
 # EcoHive Kenya Ltd. — Climate-Smart Honey Value Chain
 **Production URL:** [https://ecohive-jet.vercel.app/](https://ecohive-jet.vercel.app/)  
+**Development & Live Mirror:** [https://ais-pre-vegkej4u2lmpqczdp2pstl-122122115705.europe-west2.run.app](https://ais-pre-vegkej4u2lmpqczdp2pstl-122122115705.europe-west2.run.app)  
 **Capstone Track:** Frontend AI Engineering & General AI Fluency (Week 8)  
 **Author:** Eric Munyi (`munyieric7@gmail.com`)  
+**LinkedIn:** [https://www.linkedin.com/in/munyi-eric/](https://www.linkedin.com/in/munyi-eric/)  
 **Assignment Code:** FE-11 & FL-09
 
 ---
@@ -33,7 +35,7 @@ EcoHive introduces a circular, technology-enabled honey value chain:
 | **Signature Shader Hero** | Interactive WebGL fluid caustics simulating Kenyan honey ripples responding to cursor vectors. | Raw WebGL, GLSL, Simplex Noise |
 | **Interactive 3D Smart Hive** | Procedural 3D Langstroth hive with box explosion animations, material configurator, and raycasted parts inspection. | Three.js, React 19, TypeScript |
 | **Live IoT Apiary Telemetry** | Real-time monitoring of Baringo & Nakuru apiaries (temperature, weight, acoustic status). | Express REST API, React Hooks |
-| **Hive AI Assistant** | Context-grounded conversational agent answering farmer, investor, and buyer questions with rate-limiting protection. | Google Gemini 2.5 Flash, Node.js |
+| **Hive AI Assistant** | Multi-turn conversational agent with 4 role personas (Farmer, Investor, Buyer, Guide), dynamic follow-up chips, and dual speed/depth model switching. | Google Gemini 3.5 Flash & 3.1 Flash-Lite, Node.js |
 | **Telemetry & Privacy Analytics** | Zero-cookie client-side telemetry dashboard tracking HTTPS health and pageview trends. | Custom Express middleware |
 
 ---
@@ -48,7 +50,8 @@ EcoHive introduces a circular, technology-enabled honey value chain:
       [ React 19 + Tailwind ]                   [ Three.js Canvas ]
    • Signature GLSL Shader Hero              • Procedural 3D Hive Model
    • Multi-Tab View Router                   • Raycasting Part Inspector
-   • Privacy Analytics Tracker               • Box Explosion Controller
+   • Multi-Turn Hive AI Drawer               • Box Explosion Controller
+   • Privacy Analytics Tracker
                │
                ▼ HTTP / JSON REST
     [ Node.js + Express Server ] (Port 3000)
@@ -56,7 +59,7 @@ EcoHive introduces a circular, technology-enabled honey value chain:
    ├── /api/iot-telemetry ──────> Real-time Sensor Interpolation
    ├── /api/contact ────────────> Lead Routing & Validation Engine
    ├── /api/analytics/track ────> Privacy Telemetry Event Store
-   └── /api/ai-assistant ───────> Google Gemini 2.5 Flash Model
+   └── /api/ai-assistant ───────> Multi-Turn Gemini Engine (3.5 Flash / 3.1 Flash-Lite)
 ```
 
 ---
@@ -126,10 +129,10 @@ npm start
 
 ## 7. Production Hygiene & Abuse Protection (FE-11)
 
-To protect the server and API tokens against abuse or credit depletion:
-* **IP Sliding-Window Rate Limiting**: Max 10 requests per minute per client IP on `/api/ai-assistant`.
-* **Strict Input Character Caps**: Messages are strictly clamped to **500 characters** max. Payloads exceeding this immediately receive `HTTP 400 Bad Request`.
-* **Execution Timeout Guard**: Promise race with a **15-second abort limit** to ensure server threads never hang if upstream LLM latency spikes.
+To protect the server and API tokens against abuse, loops, or credit depletion:
+* **IP Sliding-Window Rate Limiting**: Production sliding window allowing up to **30 requests per minute** per client IP on `/api/ai-assistant`, supporting rapid multi-turn conversation while preventing automated flooding.
+* **Strict Input Character Caps**: Messages are strictly clamped to **1,000 characters** max with history truncation to keep token consumption bounded. Payloads exceeding this immediately receive `HTTP 400 Bad Request`.
+* **Multi-Tier Cascade & Circuit Breaker**: An intelligent timeout guard and cascading model pipeline (`gemini-3.5-flash` → `gemini-3.1-flash-lite` → `gemini-flash-latest` → domain-grounded offline knowledge base) ensures zero blank screens or crashed threads even during upstream API outages.
 * **HTTP 429 Responses**: Returns structured JSON with `Retry-After` header indicating seconds until unlock.
 
 ---
