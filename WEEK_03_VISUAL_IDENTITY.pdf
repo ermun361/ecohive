@@ -1,0 +1,187 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R 5 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 7 0 R /F2 8 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 2965 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+50 740 Td
+T*
+/F2 13 Tf
+16 TL
+T* (General AI Fluency   Week 3 Assignment) Tj
+/F1 9 Tf
+13 TL
+T*
+/F2 11 Tf
+14 TL
+T* ("Consistency, Not Talent \(and Frame, Not Upstage\)") Tj
+/F1 9 Tf
+13 TL
+T* () Tj
+T* (**Candidate:** Eric Munyi \(`munyieric7@gmail.com`\)  ) Tj
+T* (**Track:** General AI Fluency  ) Tj
+T* (**Week:** Week 3 \(Foundations\)  ) Tj
+T* (**Project:** EcoHive Kenya Ltd.   Visual Identity & Image Judgment Memo  ) Tj
+T* (**Production URL:** [https://ecohive-jet.vercel.app/]\(https://ecohive-jet.vercel) Tj
+T* (.app/\)  ) Tj
+T* () Tj
+T* (--------------------------------------------------------------------------------) Tj
+T* () Tj
+T*
+/F2 11 Tf
+14 TL
+T* (1. Visual Identity Kit \(Consistency, Not Talent\)) Tj
+/F1 9 Tf
+13 TL
+T* () Tj
+T* (To eliminate the common markers of "AI Slop" \(arbitrary neon glows, purple-to-cy) Tj
+T* (an gradients, and mismatched font pairings\), EcoHive Kenya enforces a strict, in) Tj
+T* (tentional 3-color palette, disciplined typography tokens, and an 8pt spatial gri) Tj
+T* (d:) Tj
+T* () Tj
+/F2 9.5 Tf
+T* (A. The 3-Color Semantic Palette) Tj
+/F1 9 Tf
+T* (1. **Forest Pine \(`#1B4D3E`\):** Primary structural neutral representing Kenyan a) Tj
+T* (gricultural canopy and environmental permanence. Grounding tone for headers, hig) Tj
+T* (h-contrast cards, and dark theme containers.) Tj
+T* (2. **Savanna Gold \(`#D4A373`\):** Organic warm neutral evoking East African dryla) Tj
+T* (nds and raw beeswax. Used for secondary metadata labels and subtle hairline divi) Tj
+T* (ders.) Tj
+T* (3. **Honey Amber \(`#E5A93C` / `#FEF3C7`\):** High-contrast active accent reserved) Tj
+T* ( exclusively for interactive elements, hover states, and WCAG AA-compliant focus) Tj
+T* ( rings \(`focus-visible:ring-2 focus-visible:ring-amber-500`\).) Tj
+T* () Tj
+T* (*Constraint:* Zero rainbow gradients, zero arbitrary saturation spikes. Every hu) Tj
+T* (e has a direct real-world grounding in Kenyan apiculture.) Tj
+T* () Tj
+/F2 9.5 Tf
+T* (B. Typographic Hierarchy) Tj
+/F1 9 Tf
+T* (* **Display & Heading:** *Cinzel*   Architectural, classical serif conveying agr) Tj
+T* (icultural stewardship, heritage, and enterprise credibility.) Tj
+T* (* **Interface & Body:** *Plus Jakarta Sans*   Highly legible, contemporary geome) Tj
+T* (tric sans-serif optimized for multi-screen readability at 16px baseline with a 1) Tj
+T* (.6 line height.) Tj
+T* () Tj
+T* (--------------------------------------------------------------------------------) Tj
+T* () Tj
+T*
+/F2 11 Tf
+14 TL
+T* (2. "Frame, Not Upstage" \(The Gallery Wall Principle\)) Tj
+/F1 9 Tf
+13 TL
+T* () Tj
+T* (A portfolio's layout must serve as an unobtrusive gallery frame that highlights ) Tj
+T* (the proof of engineering rather than competing with it for visual dominance:) Tj
+T* () Tj
+T* (1. **Subtle Depth Over Visual Noise:** Flat structural cards with 1px border div) Tj
+T* (iders \(`border-stone-800`\) rather than gaudy drop shadows or artificial glassmor) Tj
+T* (phism.) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 6 0 R /Resources << /Font << /F1 7 0 R /F2 8 0 R >> >> >>
+endobj
+6 0 obj
+<< /Length 2684 >>
+stream
+BT
+/F1 9 Tf
+13 TL
+50 740 Td
+T* (2. **The Work is the Hero:** The canvas design steps back to let the technical p) Tj
+T* (roof shine:) Tj
+T* (   - The interactive procedural Three.js Langstroth hive model.) Tj
+T* (   - The real-time sensor telemetry graphs \(temperature, acoustics, weight\).) Tj
+T* (   - The interactive multi-turn Hive AI assistant drawer.) Tj
+T* (3. **Restraint:** Text inside buttons, chips, and persona selectors remains on a) Tj
+T* ( single line with mathematical padding \(horizontal padding = 2x vertical padding) Tj
+T* (\).) Tj
+T* () Tj
+T* (--------------------------------------------------------------------------------) Tj
+T* () Tj
+T*
+/F2 11 Tf
+14 TL
+T* (3. AI Image Judgment & Curation) Tj
+/F1 9 Tf
+13 TL
+T* () Tj
+T* (The primary skill when working with generative AI is **curation and rejection** ) Tj
+T* (knowing when an AI image degrades credibility and when real technical assets or ) Tj
+T* (disciplined code beat generative art:) Tj
+T* () Tj
+/F2 9.5 Tf
+T* (What Was Rejected) Tj
+/F1 9 Tf
+T* (* **Generic AI Bee/Hive Illustrations:** High-gloss, cartoonish AI renderings of) Tj
+T* ( bees, neon honeycombs, and pseudo-futuristic glass hives were systematically re) Tj
+T* (jected. They look like generic stock imagery and signal amateur execution to tec) Tj
+T* (hnical evaluators.) Tj
+T* (* **Hallucinated Hardware:** Generative AI concepts of solar sensors often inven) Tj
+T* (t impossible wiring or fantastical industrial designs that undermine real agrono) Tj
+T* (mic validity.) Tj
+T* () Tj
+/F2 9.5 Tf
+T* (What Was Chosen & Why) Tj
+/F1 9 Tf
+T* (1. **Real Procedural Three.js 3D Geometry:** Instead of a static AI picture, the) Tj
+T* ( hive was built out of real mathematical 3D boxes in Three.js. This proves real ) Tj
+T* (frontend engineering skill and interactive capability.) Tj
+T* (2. **Custom WebGL Amber Shader:** Rather than a static AI background, a custom G) Tj
+T* (LSL fluid caustic shader was programmed to mathematically simulate Kenyan raw ho) Tj
+T* (ney viscosity in response to cursor vectors.) Tj
+T* (3. **Authentic Data Visualizations:** Real telemetry dashboards, SVG system arch) Tj
+T* (itecture sketches, and structured data tables take precedence over decorative ar) Tj
+T* (t. Real proof always beats synthetic illustration.) Tj
+T* () Tj
+T* (--------------------------------------------------------------------------------) Tj
+T* () Tj
+T*
+/F2 11 Tf
+14 TL
+T* (4. Verification & Live Implementation) Tj
+/F1 9 Tf
+13 TL
+T* (The complete visual identity and design system is live and verified across all v) Tj
+T* (iewport widths at:  ) Tj
+T* (   **[https://ecohive-jet.vercel.app/]\(https://ecohive-jet.vercel.app/\)**) Tj
+T* () Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+8 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+xref
+0 9
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000121 00000 n 
+0000000257 00000 n 
+0000003274 00000 n 
+0000003410 00000 n 
+0000006146 00000 n 
+0000006216 00000 n 
+trailer
+<< /Size 9 /Root 1 0 R >>
+startxref
+6291
+%%EOF
