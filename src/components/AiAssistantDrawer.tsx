@@ -222,25 +222,96 @@ export const AiAssistantDrawer: React.FC<Props> = ({ isOpen, onClose }) => {
           history: historyPayload,
           role: activeRole,
           mode: activeMode,
+          stream: true,
         }),
         signal: abortControllerRef.current.signal,
       });
 
-      const data = await res.json();
-      const botReply = data.reply || 'Thank you for reaching out to EcoHive Kenya Ltd. Please reach our team directly at Info@ecohivekenya.com.';
-      const modelName = data.modelUsed || (activeMode === 'fast' ? 'gemini-3.1-flash-lite' : 'gemini-3.5-flash');
+      const contentType = res.headers.get('content-type') || '';
+      const botMsgId = `bot-${Date.now()}`;
 
-      const botMsg: Message = {
-        id: `bot-${Date.now()}`,
-        sender: 'bot',
-        text: botReply,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        modelUsed: modelName,
-        suggestedFollowUps: data.suggestedFollowUps || ROLE_CONFIG[activeRole].quickPrompts.slice(0, 3),
-      };
+      if (contentType.includes('text/event-stream') && res.body) {
+        // Initial empty bot message for streaming
+        const initialBotMsg: Message = {
+          id: botMsgId,
+          sender: 'bot',
+          text: '',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          modelUsed: activeMode === 'fast' ? 'gemini-3.1-flash-lite' : 'gemini-3.5-flash',
+          suggestedFollowUps: [],
+        };
+        setMessages([...updatedMessages, initialBotMsg]);
 
-      setMessages([...updatedMessages, botMsg]);
-      setLiveAnnouncement(`Hive AI replied: ${botReply.slice(0, 100)}`);
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let accumulatedText = '';
+        let buffer = '';
+        let finalFollowUps: string[] | undefined;
+        let finalModel: string | undefined;
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (trimmed.startsWith('data: ')) {
+              try {
+                const payload = JSON.parse(trimmed.slice(6));
+                if (payload.text) {
+                  accumulatedText += payload.text;
+                  setMessages((prev) =>
+                    prev.map((msg) =>
+                      msg.id === botMsgId ? { ...msg, text: accumulatedText } : msg
+                    )
+                  );
+                }
+                if (payload.done) {
+                  if (payload.modelUsed) finalModel = payload.modelUsed;
+                  if (payload.suggestedFollowUps) finalFollowUps = payload.suggestedFollowUps;
+                }
+              } catch {
+                // Ignore partial JSON line
+              }
+            }
+          }
+        }
+
+        // Finalize message state
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === botMsgId
+              ? {
+                  ...msg,
+                  text: accumulatedText || 'EcoHive Kenya Ltd. provides climate-smart beehives made from 100% recycled plastic with solar IoT telemetry.',
+                  modelUsed: finalModel || msg.modelUsed,
+                  suggestedFollowUps: finalFollowUps || ROLE_CONFIG[activeRole].quickPrompts.slice(0, 3),
+                }
+              : msg
+          )
+        );
+        setLiveAnnouncement(`Hive AI replied: ${accumulatedText.slice(0, 100)}`);
+      } else {
+        const data = await res.json();
+        const botReply = data.reply || 'Thank you for reaching out to EcoHive Kenya Ltd. Please reach our team directly at Info@ecohivekenya.com.';
+        const modelName = data.modelUsed || (activeMode === 'fast' ? 'gemini-3.1-flash-lite' : 'gemini-3.5-flash');
+
+        const botMsg: Message = {
+          id: botMsgId,
+          sender: 'bot',
+          text: botReply,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          modelUsed: modelName,
+          suggestedFollowUps: data.suggestedFollowUps || ROLE_CONFIG[activeRole].quickPrompts.slice(0, 3),
+        };
+
+        setMessages([...updatedMessages, botMsg]);
+        setLiveAnnouncement(`Hive AI replied: ${botReply.slice(0, 100)}`);
+      }
     } catch (err: any) {
       if (err.name === 'AbortError') return;
 

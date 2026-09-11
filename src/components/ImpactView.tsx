@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { IMAGES } from '../data/images';
+import { ApiaryRegionalMap } from './ApiaryRegionalMap';
 import {
   Recycle,
   Users,
@@ -173,17 +174,22 @@ export const ImpactView: React.FC<Props> = () => {
         </div>
       </section>
 
-      {/* KENYA CLUSTER APIARY MAP / LIST */}
+      {/* KENYA CLUSTER INTERACTIVE REGIONAL MAP */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <ApiaryRegionalMap />
+      </div>
+
+      {/* KENYA CLUSTER APIARY DIRECTORY */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-2 mb-10">
           <span className="text-xs font-black text-amber-950 uppercase tracking-widest bg-amber-400/15 px-3.5 py-1 rounded-full border border-amber-400/40 shadow-2xs">
-            Active Deployments
+            Cluster Directory
           </span>
           <h2 className="text-2xl sm:text-3xl font-black text-stone-900 font-display">
-            EcoHive Apiary Clusters in Kenya
+            National Apiary Field Contacts
           </h2>
           <p className="text-stone-600 text-sm font-body">
-            Live telemetry nodes monitoring honey accumulation across diverse regional flora ecosystems.
+            Local farmer cooperative leads coordinating equipment distribution and honey off-take.
           </p>
         </div>
 

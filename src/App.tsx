@@ -12,6 +12,7 @@ import { AboutContactView } from './components/AboutContactView';
 import { IoTDashboardModal } from './components/IoTDashboardModal';
 import { AiAssistantDrawer } from './components/AiAssistantDrawer';
 import { AnalyticsModal } from './components/AnalyticsModal';
+import { OfflineIndicator } from './components/OfflineIndicator';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('home');
@@ -92,6 +93,9 @@ export default function App() {
         isOpen={analyticsOpen}
         onClose={() => setAnalyticsOpen(false)}
       />
+
+      {/* PWA Field Offline Connectivity Indicator */}
+      <OfflineIndicator />
     </div>
   );
 }

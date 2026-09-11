@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PageType } from '../types';
 import { COMPANY_INFO } from '../data/ecohiveData';
+import { PWAInstallButton } from './PWAInstallButton';
 import {
   Menu,
   X,
@@ -90,6 +91,8 @@ export const Header: React.FC<Props> = ({
 
           {/* Action Buttons */}
           <div className="hidden md:flex items-center gap-2.5">
+            <PWAInstallButton />
+
             {openAnalytics && (
               <button
                 onClick={openAnalytics}
@@ -207,6 +210,10 @@ export const Header: React.FC<Props> = ({
               <Bot className="w-4 h-4 text-amber-600" />
               <span>Hive AI</span>
             </button>
+          </div>
+
+          <div className="flex justify-center pt-1">
+            <PWAInstallButton />
           </div>
 
           <button

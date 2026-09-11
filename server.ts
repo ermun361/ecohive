@@ -306,7 +306,7 @@ app.post('/api/ai-assistant', async (req, res) => {
       return;
     }
 
-    const { message, history, role = 'general', mode = 'balanced' } = req.body;
+    const { message, history, role = 'general', mode = 'balanced', stream = false } = req.body;
 
     // 2. Input Validation & Character Cap
     if (!message || typeof message !== 'string' || !message.trim()) {
@@ -325,16 +325,26 @@ app.post('/api/ai-assistant', async (req, res) => {
     const selectedRole = AI_ROLE_INSTRUCTIONS[role] ? role : 'general';
     const systemInstruction = AI_ROLE_INSTRUCTIONS[selectedRole];
 
+    // Compute dynamic suggested follow-ups
+    const lower = cleanMessage.toLowerCase();
+    let suggestedFollowUps = ['What are the Smart Hive specs?', 'How can I partner with EcoHive?', 'Who is CEO Eric Munyi?'];
+    if (lower.includes('spec') || lower.includes('iot') || lower.includes('sensor')) {
+      suggestedFollowUps = ['How does acoustic swarming alert work?', 'What is the hive battery life?', 'How to buy a Smart Hive?'];
+    } else if (lower.includes('eric') || lower.includes('ceo') || lower.includes('founder') || lower.includes('munyi')) {
+      suggestedFollowUps = ['How can I email CEO Eric Munyi?', 'What is EcoHive’s 2026 expansion roadmap?', 'Tell me about the People-Planet-Profit model'];
+    } else if (lower.includes('invest') || lower.includes('partner') || lower.includes('esg')) {
+      suggestedFollowUps = ['What are the carbon credit benefits?', 'How much plastic is recycled per hive?', 'Request investor deck from Eric Munyi'];
+    } else if (lower.includes('farmer') || lower.includes('yield') || lower.includes('harvest') || lower.includes('bee')) {
+      suggestedFollowUps = ['What is the ideal brood temperature?', 'How does the off-take payment work?', 'Contact Operations Lead Andika'];
+    }
+
     // Select primary model per guidelines:
-    // - gemini-3.1-flash-lite for fast tasks
-    // - gemini-3.5-flash for general tasks
     const primaryModel = mode === 'fast' ? 'gemini-3.1-flash-lite' : 'gemini-3.5-flash';
     const fallbackModel = primaryModel === 'gemini-3.5-flash' ? 'gemini-3.1-flash-lite' : 'gemini-3.5-flash';
 
     const ai = getAiClient();
     if (!ai) {
       // Intelligent topic-aware response when API key is unconfigured
-      const lower = cleanMessage.toLowerCase();
       let reply = `Welcome to EcoHive Kenya Ltd.! We are modernizing African agriculture through IoT climate-smart beehives made from 100% recycled plastic.`;
       if (lower.includes('eric') || lower.includes('munyi') || lower.includes('ceo') || lower.includes('founder') || lower.includes('leadership')) {
         reply = `**Eric Munyi** is the Founder & CEO of EcoHive Kenya Ltd. He is pioneering climate-smart apiculture across East Africa by uniting IoT hardware, circular plastic recycling, and smallholder empowerment. You can reach his office directly at **${COMPANY_INFO.emails.ceo}** or via WhatsApp/Phone at **${COMPANY_INFO.phone}**.`;
@@ -345,10 +355,28 @@ app.post('/api/ai-assistant', async (req, res) => {
       } else if (lower.includes('honey') || lower.includes('buy') || lower.includes('order') || lower.includes('price')) {
         reply = `EcoHive Kenya produces certified organic raw acacia & wildflower honey (<18% moisture), raw & liquid propolis tinctures, and all-natural beeswax blocks. For wholesale orders and export inquiries, contact **${COMPANY_INFO.emails.operations}** or **${COMPANY_INFO.emails.general}**.`;
       }
+
+      if (stream) {
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache, no-transform');
+        res.setHeader('Connection', 'keep-alive');
+
+        // Stream in small words/chunks
+        const words = reply.split(' ');
+        for (let i = 0; i < words.length; i++) {
+          const chunk = (i === 0 ? '' : ' ') + words[i];
+          res.write(`data: ${JSON.stringify({ text: chunk })}\n\n`);
+          await new Promise((r) => setTimeout(r, 20));
+        }
+        res.write(`data: ${JSON.stringify({ done: true, modelUsed: 'local-knowledge', role: selectedRole, suggestedFollowUps })}\n\n`);
+        res.end();
+        return;
+      }
+
       res.json({
         reply,
         modelUsed: 'local-knowledge',
-        suggestedFollowUps: ['What are the IoT sensor specs?', 'Who is CEO Eric Munyi?', 'How can I become an out-grower?'],
+        suggestedFollowUps,
       });
       return;
     }
@@ -357,7 +385,6 @@ app.post('/api/ai-assistant', async (req, res) => {
     const contents: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> = [];
 
     if (Array.isArray(history)) {
-      // Include the last 10 turns to maintain fluid conversation context
       const validHistory = history.slice(-10);
       for (const turn of validHistory) {
         if (
@@ -374,13 +401,71 @@ app.post('/api/ai-assistant', async (req, res) => {
       }
     }
 
-    // Append current user message
     contents.push({
       role: 'user',
       parts: [{ text: cleanMessage }],
     });
 
-    // Helper to generate content with fallback
+    // If streaming is requested:
+    if (stream) {
+      res.setHeader('Content-Type', 'text/event-stream');
+      res.setHeader('Cache-Control', 'no-cache, no-transform');
+      res.setHeader('Connection', 'keep-alive');
+
+      let usedModel = primaryModel;
+      let streamSucceeded = false;
+
+      try {
+        const streamResult = await ai.models.generateContentStream({
+          model: primaryModel,
+          contents,
+          config: {
+            systemInstruction,
+            temperature: 0.7,
+          },
+        });
+
+        for await (const chunk of streamResult) {
+          if (chunk.text) {
+            res.write(`data: ${JSON.stringify({ text: chunk.text })}\n\n`);
+          }
+        }
+        streamSucceeded = true;
+      } catch (streamErr) {
+        console.warn(`Streaming primary model ${primaryModel} failed:`, streamErr);
+        try {
+          usedModel = fallbackModel;
+          const fallbackResult = await ai.models.generateContentStream({
+            model: fallbackModel,
+            contents,
+            config: {
+              systemInstruction,
+              temperature: 0.7,
+            },
+          });
+          for await (const chunk of fallbackResult) {
+            if (chunk.text) {
+              res.write(`data: ${JSON.stringify({ text: chunk.text })}\n\n`);
+            }
+          }
+          streamSucceeded = true;
+        } catch (fbErr) {
+          console.warn(`Streaming fallback model also failed:`, fbErr);
+        }
+      }
+
+      if (!streamSucceeded) {
+        const fallbackText = `EcoHive Kenya Ltd. provides climate-smart beehives made from 100% recycled plastic with solar IoT telemetry. For direct inquiries, email ${COMPANY_INFO.emails.general} or contact CEO Eric Munyi at ${COMPANY_INFO.emails.ceo}.`;
+        res.write(`data: ${JSON.stringify({ text: fallbackText })}\n\n`);
+        usedModel = 'offline-knowledge-base';
+      }
+
+      res.write(`data: ${JSON.stringify({ done: true, modelUsed: usedModel, role: selectedRole, suggestedFollowUps })}\n\n`);
+      res.end();
+      return;
+    }
+
+    // Standard Non-Streaming JSON Fallback
     async function generateWithModel(modelName: string): Promise<string> {
       const timeoutPromise = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error(`AI inference timeout (12s) for ${modelName}`)), 12000)
@@ -418,19 +503,6 @@ app.post('/api/ai-assistant', async (req, res) => {
 
     if (!botReply) {
       botReply = `EcoHive Kenya Ltd. provides climate-smart beehives made from 100% recycled plastic with solar IoT telemetry. For direct inquiries, email ${COMPANY_INFO.emails.general} or contact CEO Eric Munyi at ${COMPANY_INFO.emails.ceo}.`;
-    }
-
-    // Dynamic suggested follow-ups based on query context
-    const lower = cleanMessage.toLowerCase();
-    let suggestedFollowUps = ['What are the Smart Hive specs?', 'How can I partner with EcoHive?', 'Who is CEO Eric Munyi?'];
-    if (lower.includes('spec') || lower.includes('iot') || lower.includes('sensor')) {
-      suggestedFollowUps = ['How does acoustic swarming alert work?', 'What is the hive battery life?', 'How to buy a Smart Hive?'];
-    } else if (lower.includes('eric') || lower.includes('ceo') || lower.includes('founder') || lower.includes('munyi')) {
-      suggestedFollowUps = ['How can I email CEO Eric Munyi?', 'What is EcoHive’s 2026 expansion roadmap?', 'Tell me about the People-Planet-Profit model'];
-    } else if (lower.includes('invest') || lower.includes('partner') || lower.includes('esg')) {
-      suggestedFollowUps = ['What are the carbon credit benefits?', 'How much plastic is recycled per hive?', 'Request investor deck from Eric Munyi'];
-    } else if (lower.includes('farmer') || lower.includes('yield') || lower.includes('harvest') || lower.includes('bee')) {
-      suggestedFollowUps = ['What is the ideal brood temperature?', 'How does the off-take payment work?', 'Contact Operations Lead Andika'];
     }
 
     res.json({
