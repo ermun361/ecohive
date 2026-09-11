@@ -465,9 +465,11 @@ app.post('/api/ai-assistant', async (req, res) => {
       suggestedFollowUps = ['What is the ideal brood temperature?', 'How does the off-take payment work?', 'Contact Operations Lead Andika'];
     }
 
-    // Select primary model per guidelines:
-    const primaryModel = mode === 'fast' ? 'gemini-3.1-flash-lite' : 'gemini-3.5-flash';
-    const fallbackModel = primaryModel === 'gemini-3.5-flash' ? 'gemini-3.1-flash-lite' : 'gemini-3.5-flash';
+    // Select models per @google/genai guidelines:
+    const primaryModel = mode === 'fast' ? 'gemini-3.1-flash-lite' : 'gemini-3.8-flash';
+    const fallbackCandidates = ['gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-flash-latest'].filter(
+      (m) => m !== primaryModel
+    );
 
     const ai = getAiClient();
     if (!ai) {
@@ -541,48 +543,45 @@ app.post('/api/ai-assistant', async (req, res) => {
 
       let usedModel = primaryModel;
       let streamSucceeded = false;
+      const modelQueue = [primaryModel, ...fallbackCandidates];
 
-      try {
-        const streamResult = await ai.models.generateContentStream({
-          model: primaryModel,
-          contents,
-          config: {
-            systemInstruction,
-            temperature: 0.7,
-          },
-        });
-
-        for await (const chunk of streamResult) {
-          if (chunk.text) {
-            res.write(`data: ${JSON.stringify({ text: chunk.text })}\n\n`);
-          }
-        }
-        streamSucceeded = true;
-      } catch (streamErr) {
-        console.warn(`Streaming primary model ${primaryModel} failed:`, streamErr);
+      for (const candidate of modelQueue) {
         try {
-          usedModel = fallbackModel;
-          const fallbackResult = await ai.models.generateContentStream({
-            model: fallbackModel,
+          const streamResult = await ai.models.generateContentStream({
+            model: candidate,
             contents,
             config: {
               systemInstruction,
               temperature: 0.7,
             },
           });
-          for await (const chunk of fallbackResult) {
+
+          let chunkCount = 0;
+          for await (const chunk of streamResult) {
             if (chunk.text) {
               res.write(`data: ${JSON.stringify({ text: chunk.text })}\n\n`);
+              chunkCount++;
             }
           }
-          streamSucceeded = true;
-        } catch (fbErr) {
-          console.warn(`Streaming fallback model also failed:`, fbErr);
+
+          if (chunkCount > 0) {
+            streamSucceeded = true;
+            usedModel = candidate;
+            break;
+          }
+        } catch (streamErr: any) {
+          console.log(`[Hive AI] Model ${candidate} notice (trying next candidate): ${streamErr?.message || streamErr}`);
+          // Continue to next candidate
         }
       }
 
       if (!streamSucceeded) {
-        const fallbackText = `EcoHive Kenya Ltd. provides climate-smart beehives made from 100% recycled plastic with solar IoT telemetry. For direct inquiries, email ${COMPANY_INFO.emails.general} or contact CEO Eric Munyi at ${COMPANY_INFO.emails.ceo}.`;
+        let fallbackText = `EcoHive Kenya Ltd. provides climate-smart beehives made from 100% recycled plastic with solar IoT telemetry. For direct inquiries, email ${COMPANY_INFO.emails.general} or contact CEO Eric Munyi at ${COMPANY_INFO.emails.ceo}.`;
+        if (lower.includes('eric') || lower.includes('munyi') || lower.includes('ceo')) {
+          fallbackText = `**Eric Munyi** is Founder & CEO of EcoHive Kenya Ltd. He can be reached directly at **${COMPANY_INFO.emails.ceo}** or via WhatsApp/Phone at **${COMPANY_INFO.phone}**.`;
+        } else if (lower.includes('spec') || lower.includes('hive') || lower.includes('sensor')) {
+          fallbackText = `Our **Climate-Smart Langstroth Beehive** features recycled HDPE composite (25+ year lifespan), solar GSM monitoring for brood temperature (34-36°C), swarming acoustics, and weight accumulation.`;
+        }
         res.write(`data: ${JSON.stringify({ text: fallbackText })}\n\n`);
         usedModel = 'offline-knowledge-base';
       }
@@ -595,7 +594,7 @@ app.post('/api/ai-assistant', async (req, res) => {
     // Standard Non-Streaming JSON Fallback
     async function generateWithModel(modelName: string): Promise<string> {
       const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error(`AI inference timeout (12s) for ${modelName}`)), 12000)
+        setTimeout(() => reject(new Error(`AI inference timeout (10s) for ${modelName}`)), 10000)
       );
 
       const generatePromise = ai!.models.generateContent({
@@ -613,18 +612,17 @@ app.post('/api/ai-assistant', async (req, res) => {
 
     let botReply = '';
     let usedModel = primaryModel;
+    const nonStreamQueue = [primaryModel, ...fallbackCandidates];
 
-    try {
-      botReply = await generateWithModel(primaryModel);
-    } catch (primaryErr) {
-      console.warn(`Primary model ${primaryModel} failed, trying fallback ${fallbackModel}:`, primaryErr);
+    for (const candidate of nonStreamQueue) {
       try {
-        botReply = await generateWithModel(fallbackModel);
-        usedModel = fallbackModel;
-      } catch (fallbackErr) {
-        console.warn(`Fallback model ${fallbackModel} also failed, trying gemini-flash-latest:`, fallbackErr);
-        botReply = await generateWithModel('gemini-flash-latest');
-        usedModel = 'gemini-flash-latest';
+        botReply = await generateWithModel(candidate);
+        if (botReply) {
+          usedModel = candidate;
+          break;
+        }
+      } catch (err: any) {
+        console.log(`[Hive AI] Non-stream model ${candidate} notice: ${err?.message || err}`);
       }
     }
 
