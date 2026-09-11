@@ -1,10 +1,37 @@
 import express from 'express';
 import path from 'path';
 import { GoogleGenAI } from '@google/genai';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { INITIAL_TELEMETRY, COMPANY_INFO } from './src/data/ecohiveData.js';
 
 const app = express();
 const PORT = 3000;
+
+// Supabase PostgreSQL Credentials
+const SUPABASE_URL =
+  process.env.SUPABASE_URL ||
+  process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  'https://oofkbzkncgztazlfvlsp.supabase.co';
+
+const SUPABASE_ANON_KEY =
+  process.env.SUPABASE_ANON_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  'sb_publishable_4Sqdy0YVuN1x0lJnifmOCg_q6Gr4p4w';
+
+let supabaseClient: SupabaseClient | null = null;
+function getSupabase(): SupabaseClient | null {
+  if (!supabaseClient && SUPABASE_URL && SUPABASE_ANON_KEY) {
+    try {
+      supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: { persistSession: false },
+      });
+      console.log('[EcoHive Supabase] Connected to PostgreSQL instance at:', SUPABASE_URL);
+    } catch (e) {
+      console.warn('[EcoHive Supabase] Initialization warning:', e);
+    }
+  }
+  return supabaseClient;
+}
 
 app.use(express.json({ limit: '1mb' }));
 
@@ -96,8 +123,52 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Supabase PostgreSQL Status & Diagnostic Check
+app.get('/api/supabase-status', async (req, res) => {
+  const sb = getSupabase();
+  if (!sb) {
+    res.json({
+      configured: false,
+      message: 'Supabase credentials are not configured.',
+      url: null,
+    });
+    return;
+  }
+
+  try {
+    const { count, error } = await sb.from('leads').select('*', { count: 'exact', head: true });
+
+    if (error) {
+      res.json({
+        configured: true,
+        connected: false,
+        url: SUPABASE_URL,
+        tableExists: false,
+        error: error.message,
+        hint: error.code === '42P01' ? 'Table "leads" does not exist yet. Run the starter SQL schema in your Supabase SQL Editor.' : error.message,
+      });
+      return;
+    }
+
+    res.json({
+      configured: true,
+      connected: true,
+      url: SUPABASE_URL,
+      tableExists: true,
+      totalLeadsRecorded: count ?? 0,
+    });
+  } catch (err: any) {
+    res.json({
+      configured: true,
+      connected: false,
+      url: SUPABASE_URL,
+      error: err.message,
+    });
+  }
+});
+
 // Contact Inquiry Submission
-app.post('/api/contact', (req, res) => {
+app.post('/api/contact', async (req, res) => {
   const { name, email, phone, role, message, targetEmail, hiveQuantity } = req.body;
 
   const cleanName = typeof name === 'string' ? name.trim() : '';
@@ -144,7 +215,41 @@ app.post('/api/contact', (req, res) => {
     timestamp: new Date().toISOString(),
   };
 
+  // Memory backup store
   leadsStore.push(newLead);
+
+  // Attempt Supabase PostgreSQL persistence
+  let savedToDatabase = false;
+  let dbNotice: string | undefined;
+
+  const sb = getSupabase();
+  if (sb) {
+    try {
+      const { error } = await sb.from('leads').insert([
+        {
+          name: newLead.name,
+          email: newLead.email,
+          phone: newLead.phone,
+          role: newLead.role,
+          hive_quantity: newLead.hiveQuantity,
+          target_email: newLead.targetEmail,
+          message: newLead.message,
+        },
+      ]);
+
+      if (!error) {
+        savedToDatabase = true;
+        dbNotice = 'Persisted in Supabase PostgreSQL (leads table)';
+        console.log('[EcoHive Supabase] Saved lead to PostgreSQL:', newLead.email);
+      } else {
+        console.warn('[EcoHive Supabase] Note inserting lead:', error.message);
+        dbNotice = `Database notice: ${error.message}`;
+      }
+    } catch (dbErr: any) {
+      console.warn('[EcoHive Supabase] Database request exception:', dbErr);
+      dbNotice = dbErr.message;
+    }
+  }
 
   console.log(`[EcoHive Contact] New validated lead routed to ${destination}:`, newLead);
 
@@ -153,11 +258,13 @@ app.post('/api/contact', (req, res) => {
     message: `Thank you, ${newLead.name}! Your message has been routed to ${destination}. Our team will respond shortly.`,
     leadId: newLead.id,
     routedTo: destination,
+    savedToDatabase,
+    databaseNotice: dbNotice,
   });
 });
 
 // Download Technical Catalog Lead Request
-app.post('/api/catalog-request', (req, res) => {
+app.post('/api/catalog-request', async (req, res) => {
   const { email, name, organization } = req.body;
 
   const cleanEmail = typeof email === 'string' ? email.trim() : '';
@@ -171,6 +278,26 @@ app.post('/api/catalog-request', (req, res) => {
   const cleanOrg = typeof organization === 'string' ? organization.trim().slice(0, 100) : 'Individual';
 
   console.log(`[EcoHive Lead Magnet] Catalog requested by ${cleanEmail} (${cleanName}, ${cleanOrg})`);
+
+  // Attempt to store in Supabase
+  const sb = getSupabase();
+  if (sb) {
+    try {
+      await sb.from('leads').insert([
+        {
+          name: cleanName,
+          email: cleanEmail,
+          phone: 'N/A',
+          role: 'Catalog Download',
+          hive_quantity: 1,
+          target_email: COMPANY_INFO.emails.general,
+          message: `Catalog requested for organization: ${cleanOrg}`,
+        },
+      ]);
+    } catch (e) {
+      console.warn('[EcoHive Supabase] Catalog lead insert warning:', e);
+    }
+  }
 
   res.json({
     success: true,
@@ -546,7 +673,10 @@ async function start() {
   if (process.env.NODE_ENV !== 'production') {
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        hmr: false,
+      },
       appType: 'spa',
     });
     app.use(vite.middlewares);

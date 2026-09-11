@@ -1,5 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { X, BarChart3, Activity, Globe, RefreshCw, Smartphone, Monitor } from 'lucide-react';
+import {
+  X,
+  BarChart3,
+  Activity,
+  Globe,
+  RefreshCw,
+  Smartphone,
+  Monitor,
+  Database,
+  Check,
+  Copy,
+  CheckCircle2,
+  AlertTriangle,
+} from 'lucide-react';
 
 interface AnalyticsData {
   status: string;
@@ -17,6 +30,34 @@ interface AnalyticsData {
   activeTracking: boolean;
 }
 
+interface SupabaseStatus {
+  configured: boolean;
+  connected: boolean;
+  url?: string;
+  tableExists?: boolean;
+  error?: string;
+  hint?: string;
+  totalLeadsRecorded?: number;
+}
+
+const STARTER_SQL = `-- Run in Supabase SQL Editor:
+CREATE TABLE IF NOT EXISTS leads (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT,
+  role TEXT DEFAULT 'General',
+  hive_quantity INTEGER DEFAULT 1,
+  target_email TEXT,
+  message TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable Row Level Security & Public Insert
+ALTER TABLE leads ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow anonymous insertions" ON leads FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow anonymous read" ON leads FOR SELECT USING (true);`;
+
 interface AnalyticsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -24,21 +65,39 @@ interface AnalyticsModalProps {
 
 export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose }) => {
   const [data, setData] = useState<AnalyticsData | null>(null);
+  const [dbStatus, setDbStatus] = useState<SupabaseStatus | null>(null);
   const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [showSql, setShowSql] = useState(false);
 
   const fetchStats = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/analytics/stats');
-      if (res.ok) {
-        const json = await res.json();
+      const [resStats, resDb] = await Promise.allSettled([
+        fetch('/api/analytics/stats'),
+        fetch('/api/supabase-status'),
+      ]);
+
+      if (resStats.status === 'fulfilled' && resStats.value.ok) {
+        const json = await resStats.value.json();
         setData(json);
       }
+
+      if (resDb.status === 'fulfilled' && resDb.value.ok) {
+        const jsonDb = await resDb.value.json();
+        setDbStatus(jsonDb);
+      }
     } catch (err) {
-      console.error('Failed to fetch analytics:', err);
+      console.error('Failed to fetch analytics or db status:', err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCopySql = () => {
+    navigator.clipboard.writeText(STARTER_SQL);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
   };
 
   useEffect(() => {
@@ -180,6 +239,67 @@ export const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose 
               </div>
             )}
           </div>
+        </div>
+
+        {/* Supabase PostgreSQL Integration Panel */}
+        <div className="bg-stone-950/80 rounded-2xl p-4 border border-amber-500/25 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Database className="w-4 h-4 text-emerald-400" />
+              <span className="text-xs font-bold text-white uppercase tracking-wider font-mono">
+                PostgreSQL Database (Supabase)
+              </span>
+            </div>
+            {dbStatus?.connected ? (
+              <span className="flex items-center gap-1 text-[11px] text-emerald-400 font-mono bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded-md font-bold">
+                <CheckCircle2 className="w-3 h-3" /> Connected
+              </span>
+            ) : (
+              <span className="flex items-center gap-1 text-[11px] text-amber-400 font-mono bg-amber-950/60 border border-amber-500/30 px-2 py-0.5 rounded-md font-bold">
+                <Activity className="w-3 h-3 animate-pulse" /> Ready for Schema
+              </span>
+            )}
+          </div>
+
+          <div className="text-xs text-stone-300 space-y-1">
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="text-stone-400 font-mono">Project Instance:</span>
+              <span className="text-amber-200 font-mono text-[10px]">oofkbzkncgztazlfvlsp.supabase.co</span>
+            </div>
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="text-stone-400 font-mono">Status:</span>
+              <span className="text-stone-200 font-mono">
+                {dbStatus?.tableExists
+                  ? `Active • ${dbStatus.totalLeadsRecorded ?? 0} leads saved`
+                  : 'Ready • Run starter table SQL in Supabase editor'}
+              </span>
+            </div>
+          </div>
+
+          {/* Collapsible SQL Helper */}
+          <div className="pt-2 border-t border-stone-800/80 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => setShowSql(!showSql)}
+              className="text-[11px] text-amber-400 hover:text-amber-300 font-mono underline cursor-pointer"
+            >
+              {showSql ? 'Hide SQL schema script' : 'View / Copy SQL schema script'}
+            </button>
+            <button
+              type="button"
+              onClick={handleCopySql}
+              className="flex items-center gap-1.5 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold transition-all cursor-pointer"
+            >
+              {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+              <span>{copied ? 'SQL Copied!' : 'Copy SQL'}</span>
+            </button>
+          </div>
+
+          {showSql && (
+            <pre className="bg-black/60 p-3 rounded-xl text-[10px] text-amber-200/90 font-mono overflow-x-auto border border-stone-800 leading-relaxed max-h-36">
+              {STARTER_SQL}
+            </pre>
+          )}
         </div>
 
         {/* Verification Note */}

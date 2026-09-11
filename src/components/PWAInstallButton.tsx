@@ -6,6 +6,8 @@ export const PWAInstallButton: React.FC = () => {
   const { isInstallable, isInstalled, isIOS, install } = usePWAInstall();
   const [showIOSGuide, setShowIOSGuide] = useState(false);
 
+  const [showDesktopNotice, setShowDesktopNotice] = useState(false);
+
   // If already installed in standalone mode, hide
   if (isInstalled) {
     return null;
@@ -103,19 +105,48 @@ export const PWAInstallButton: React.FC = () => {
 
   // Fallback ambient button to allow users on desktop/Chromium that haven't triggered beforeinstallprompt yet
   return (
-    <button
-      id="pwa-install-ambient-btn"
-      type="button"
-      onClick={() => {
-        if (!install()) {
-          alert('To install EcoHive: tap your browser menu (⋮ or Share) and select "Install App" or "Add to Home Screen"');
-        }
-      }}
-      className="hidden md:flex items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-50/60 hover:bg-amber-100 text-amber-900 font-medium px-2.5 py-1 text-xs transition-colors"
-      title="Install EcoHive App for offline field use"
-    >
-      <Download className="w-3.5 h-3.5 text-amber-700" />
-      <span>Install</span>
-    </button>
+    <>
+      <button
+        id="pwa-install-ambient-btn"
+        type="button"
+        onClick={() => {
+          if (!install()) {
+            setShowDesktopNotice(true);
+          }
+        }}
+        className="hidden md:flex items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-50/60 hover:bg-amber-100 text-amber-900 font-medium px-2.5 py-1 text-xs transition-colors"
+        title="Install EcoHive App for offline field use"
+      >
+        <Download className="w-3.5 h-3.5 text-amber-700" />
+        <span>Install</span>
+      </button>
+
+      {showDesktopNotice && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fade-in">
+          <div className="w-full max-w-sm rounded-2xl bg-[#FDFBF7] p-5 shadow-2xl border border-amber-200">
+            <div className="flex items-center justify-between pb-3 border-b border-amber-200/60">
+              <h3 className="text-sm font-bold text-stone-900">Install EcoHive App</h3>
+              <button
+                type="button"
+                onClick={() => setShowDesktopNotice(false)}
+                className="p-1 rounded-lg hover:bg-amber-100 text-stone-500 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <p className="mt-3 text-xs text-stone-600 leading-relaxed">
+              To install EcoHive for offline field usage, tap your browser's address bar or menu (<strong>⋮</strong> or <strong>Share</strong>) and select <strong>"Install App"</strong> or <strong>"Add to Home Screen"</strong>.
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowDesktopNotice(false)}
+              className="mt-4 w-full rounded-xl bg-amber-500 py-2 text-xs font-bold text-slate-950 hover:bg-amber-600 transition-colors"
+            >
+              Understood
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
