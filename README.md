@@ -1,10 +1,7 @@
 # EcoHive Kenya Ltd. — Climate-Smart Honey Value Chain
-**Production URL:** [https://ecohive-jet.vercel.app/](https://ecohive-jet.vercel.app/)  
-**Development & Live Mirror:** [https://ais-pre-vegkej4u2lmpqczdp2pstl-122122115705.europe-west2.run.app](https://ais-pre-vegkej4u2lmpqczdp2pstl-122122115705.europe-west2.run.app)  
-**Capstone Track:** Frontend AI Engineering & General AI Fluency (Week 8)  
+**Production URL:** [https://ecohive-jet.vercel.app/](https://ecohive-jet.vercel.app/)     
 **Author:** Eric Munyi (`munyieric7@gmail.com`)  
 **LinkedIn:** [https://www.linkedin.com/in/munyi-eric/](https://www.linkedin.com/in/munyi-eric/)  
-**Assignment Code:** FE-11 & FL-09
 
 ---
 
